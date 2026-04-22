@@ -5,4 +5,4 @@ pages_build_output_dir = "frontend"
 [[d1_databases]]
 binding = "DB"
 database_name = "heimdall-gatekeeper"
-database_id = "replace-with-your-d1-id"
+database_id = "85190083-1888-48ba-8af8-00e3d73673f1"
