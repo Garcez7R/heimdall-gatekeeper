@@ -7,6 +7,8 @@
 ![CI](https://img.shields.io/github/actions/workflow/status/Garcez7R/heimdall-gatekeeper/ci.yml?branch=main&style=for-the-badge&label=CI)
 ![Security](https://img.shields.io/badge/Blue%20Team-SecOps%20Ready-0f172a?style=for-the-badge&logo=shield&logoColor=86efac)
 ![Cloudflare](https://img.shields.io/badge/Cloudflare-D1%20Roadmap-0f172a?style=for-the-badge&logo=cloudflare&logoColor=f59e0b)
+![i18n](https://img.shields.io/badge/i18n-PT--BR%20%7C%20EN%20%7C%20ES-0f172a?style=for-the-badge&logo=googletranslate&logoColor=93c5fd)
+![Accessibility](https://img.shields.io/badge/A11y-High%20Contrast%20%26%20Reduce%20Motion-0f172a?style=for-the-badge&logo=dependabot&logoColor=86efac)
 
 Enterprise-style mini-SIEM focused on Blue Team, SecOps and DevSecOps portfolio value. Heimdall Gatekeeper was designed to stay lightweight while still delivering event ingestion, YAML-based detections, alerting, CVE enrichment, operational metrics and a professional dashboard.
 
@@ -19,6 +21,8 @@ Enterprise-style mini-SIEM focused on Blue Team, SecOps and DevSecOps portfolio 
 - Enterprise dashboard with dark/light mode, i18n and accessibility toggles
 - Docker, GitHub Actions and security scanning pipeline
 - Cloudflare D1-ready architecture for future sync mode
+- Demo bootstrap data for immediate portfolio presentation
+- Timeline, CVE panel, top sources and live ingest console
 
 ## Architecture
 
@@ -64,6 +68,12 @@ uvicorn backend.api.main:app --reload
 
 Open `http://127.0.0.1:8000`.
 
+To populate demo signals immediately, the app now auto-seeds when the database is empty. You can also trigger the bootstrap manually:
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/demo/bootstrap
+```
+
 ## Docker
 
 ```bash
@@ -100,6 +110,17 @@ curl -X POST http://127.0.0.1:8000/api/events/ingest \
 - Syslog/file watcher ingestion workers
 - Authenticated multi-user console
 - Charts and timeline expansion
+
+## Cloudflare Path
+
+The current delivery is optimized for local runtime, Docker and VPS-like deployment. The next Cloudflare-oriented step is:
+
+1. externalize SQLite writes behind a storage adapter
+2. add D1 implementation for events, alerts and metrics
+3. move dashboard to Pages static hosting
+4. expose FastAPI-equivalent APIs through Workers or Python service edge pattern
+
+This means the architecture is already aligned for Cloudflare migration, without forcing the first release into a heavier setup too early.
 
 ## Why It Matters
 

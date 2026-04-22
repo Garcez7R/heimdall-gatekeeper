@@ -50,5 +50,57 @@ def build_status_snapshot() -> dict[str, object]:
     }
 
 
+def build_overview_snapshot() -> dict[str, object]:
+    status = build_status_snapshot()
+    severity_breakdown = {
+        "critical": int((fetch_one("SELECT COUNT(*) AS total FROM alerts WHERE severity = 'critical' AND status != 'resolved'") or {"total": 0})["total"]),
+        "high": int((fetch_one("SELECT COUNT(*) AS total FROM alerts WHERE severity = 'high' AND status != 'resolved'") or {"total": 0})["total"]),
+        "medium": int((fetch_one("SELECT COUNT(*) AS total FROM alerts WHERE severity = 'medium' AND status != 'resolved'") or {"total": 0})["total"]),
+        "low": int((fetch_one("SELECT COUNT(*) AS total FROM alerts WHERE severity = 'low' AND status != 'resolved'") or {"total": 0})["total"]),
+    }
+    timeline = fetch_all(
+        """
+        SELECT substr(created_at, 1, 13) || ':00' AS bucket, COUNT(*) AS total
+        FROM events
+        GROUP BY bucket
+        ORDER BY bucket DESC
+        LIMIT 12
+        """
+    )
+    top_sources = fetch_all(
+        """
+        SELECT source, COUNT(*) AS total
+        FROM events
+        GROUP BY source
+        ORDER BY total DESC, source ASC
+        LIMIT 6
+        """
+    )
+    top_cves = fetch_all(
+        """
+        SELECT cve_id, COUNT(*) AS total, MAX(cve_score) AS score
+        FROM alerts
+        WHERE cve_id IS NOT NULL AND cve_id != ''
+        GROUP BY cve_id
+        ORDER BY total DESC, score DESC
+        LIMIT 6
+        """
+    )
+    latest_metrics = {
+        item["metric_key"]: item["metric_value"]
+        for item in status["metrics"]  # type: ignore[index]
+    }
+
+    return {
+        "status": status,
+        "severity_breakdown": severity_breakdown,
+        "timeline": list(reversed(timeline)),
+        "top_sources": top_sources,
+        "top_cves": top_cves,
+        "events_per_minute": latest_metrics.get("events_per_minute", "0"),
+        "last_ingest_at": latest_metrics.get("last_ingest_at"),
+    }
+
+
 def export_snapshot() -> str:
     return json.dumps(build_status_snapshot(), ensure_ascii=False, indent=2)

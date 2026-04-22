@@ -5,5 +5,22 @@
   "status": "Estado del sistema",
   "latestAlerts": "Alertas recientes",
   "topIps": "IPs sospechosas",
-  "healthy": "Saludable"
+  "healthy": "Saludable",
+  "activeAlerts": "Alertas activas",
+  "criticalAlerts": "Alertas críticas",
+  "eventsPerMinute": "Eventos/min",
+  "uptime": "Tiempo activo",
+  "eventsHint": "Eventos normalizados almacenados en el pipeline.",
+  "activeAlertsHint": "Alertas que aún requieren acción del analista.",
+  "criticalAlertsHint": "Detecciones de mayor urgencia operativa.",
+  "eventsPerMinuteHint": "Cadencia reciente de ingestión operativa.",
+  "acknowledge": "Reconocer",
+  "resolve": "Resolver",
+  "noAlerts": "Aún no hay alertas activas.",
+  "noThreatSources": "Aún no hay IPs sospechosas relevantes.",
+  "noTimeline": "La línea de tiempo se llenará cuando ingresen eventos.",
+  "noCves": "Aún no hay alertas vinculadas a CVEs.",
+  "cveOccurrences": "Ocurrencias",
+  "eventProcessed": "Evento procesado",
+  "alertsTriggered": "Alertas generadas"
 }

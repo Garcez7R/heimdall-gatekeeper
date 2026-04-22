@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from datetime import datetime, timezone
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,9 +10,10 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from backend.core.config import load_config
-from backend.core.metrics import build_status_snapshot
+from backend.core.metrics import build_overview_snapshot, build_status_snapshot, save_metric
 from backend.core.pipeline import ingest_event, list_alerts, list_events, update_alert_status
-from backend.storage.db import fetch_one, initialize_database
+from backend.core.seed import seed_demo_data_if_empty
+from backend.storage.db import initialize_database
 
 
 BASE_DIR = Path(__file__).resolve().parents[2]
@@ -46,6 +48,7 @@ class AlertAction(BaseModel):
 @app.on_event("startup")
 def on_startup() -> None:
     initialize_database()
+    seed_demo_data_if_empty()
 
 
 @app.get("/health")
@@ -63,26 +66,20 @@ def config() -> dict[str, object]:
         "languages": ui.get("languages", ["pt-BR", "en", "es"]),
         "default_language": ui.get("default_language", "en"),
         "default_theme": ui.get("default_theme", "dark"),
+        "splash_duration_ms": ui.get("splash_duration_ms", 1200),
     }
 
 
 @app.get("/api/overview")
 def overview() -> dict[str, object]:
-    status = build_status_snapshot()
-    severities = {
-        "critical": (fetch_one("SELECT COUNT(*) AS total FROM alerts WHERE severity = 'critical' AND status != 'resolved'") or {"total": 0})["total"],
-        "high": (fetch_one("SELECT COUNT(*) AS total FROM alerts WHERE severity = 'high' AND status != 'resolved'") or {"total": 0})["total"],
-        "medium": (fetch_one("SELECT COUNT(*) AS total FROM alerts WHERE severity = 'medium' AND status != 'resolved'") or {"total": 0})["total"],
-        "low": (fetch_one("SELECT COUNT(*) AS total FROM alerts WHERE severity = 'low' AND status != 'resolved'") or {"total": 0})["total"],
-    }
+    snapshot = build_overview_snapshot()
     top_ips = [
         row
         for row in list_events(limit=5)
         if row.get("ip_address")
     ]
     return {
-        "status": status,
-        "severity_breakdown": severities,
+        **snapshot,
         "latest_alerts": list_alerts(limit=8),
         "latest_events": list_events(limit=8),
         "top_ips": top_ips,
@@ -106,6 +103,13 @@ def alerts(limit: int = Query(default=100, le=500), status: str = "") -> dict[st
 @app.post("/api/events/ingest")
 def ingest(payload: IngestRequest) -> dict[str, object]:
     return ingest_event(payload.model_dump())
+
+
+@app.post("/api/demo/bootstrap")
+def bootstrap_demo() -> dict[str, str]:
+    seed_demo_data_if_empty()
+    save_metric("demo_bootstrap_at", datetime.now(timezone.utc).isoformat())
+    return {"status": "ok"}
 
 
 @app.post("/api/alerts/{alert_id}/acknowledge")

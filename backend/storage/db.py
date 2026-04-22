@@ -23,10 +23,10 @@ def get_connection() -> Iterator[sqlite3.Connection]:
     connection = sqlite3.connect(get_database_path())
     connection.row_factory = sqlite3.Row
     try:
-      yield connection
-      connection.commit()
+        yield connection
+        connection.commit()
     finally:
-      connection.close()
+        connection.close()
 
 
 SCHEMA = """
@@ -90,6 +90,11 @@ CREATE TABLE IF NOT EXISTS system_metrics (
   metric_value TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
+
+CREATE INDEX IF NOT EXISTS idx_events_created_at ON events (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_events_severity ON events (severity);
+CREATE INDEX IF NOT EXISTS idx_alerts_status ON alerts (status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_alerts_severity ON alerts (severity, created_at DESC);
 """
 
 

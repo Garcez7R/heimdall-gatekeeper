@@ -5,5 +5,22 @@
   "status": "System Status",
   "latestAlerts": "Latest Alerts",
   "topIps": "Top suspicious IPs",
-  "healthy": "Healthy"
+  "healthy": "Healthy",
+  "activeAlerts": "Active Alerts",
+  "criticalAlerts": "Critical Alerts",
+  "eventsPerMinute": "Events/min",
+  "uptime": "Uptime",
+  "eventsHint": "Normalized events stored in the pipeline.",
+  "activeAlertsHint": "Alerts still requiring analyst action.",
+  "criticalAlertsHint": "Highest urgency security detections.",
+  "eventsPerMinuteHint": "Recent operational ingestion cadence.",
+  "acknowledge": "Acknowledge",
+  "resolve": "Resolve",
+  "noAlerts": "No active alerts yet.",
+  "noThreatSources": "No suspicious IPs yet.",
+  "noTimeline": "Timeline will populate as events are ingested.",
+  "noCves": "No CVE-linked alerts observed yet.",
+  "cveOccurrences": "Occurrences",
+  "eventProcessed": "Event processed",
+  "alertsTriggered": "Alerts triggered"
 }

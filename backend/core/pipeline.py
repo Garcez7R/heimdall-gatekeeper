@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from datetime import datetime, timezone
 from typing import Any
 
@@ -21,6 +22,8 @@ def normalize_event(payload: dict[str, Any]) -> EventPayload:
     title = str(payload.get("title", event_type.replace("_", " ").title())).strip() or "Generic event"
     message = str(payload.get("message", payload.get("description", "No message provided"))).strip()
     severity = str(payload.get("severity", "low")).lower()
+    if severity not in {"low", "medium", "high", "critical"}:
+        severity = "low"
     ip_address = payload.get("ip_address")
     cve_id = payload.get("cve_id")
     tags = payload.get("tags", [])
@@ -38,6 +41,39 @@ def normalize_event(payload: dict[str, Any]) -> EventPayload:
         tags=[str(item) for item in tags],
         raw_payload=payload,
     )
+
+
+def sanitize_event_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    allowed_keys = {
+        "source",
+        "event_type",
+        "type",
+        "title",
+        "message",
+        "description",
+        "severity",
+        "ip_address",
+        "cve_id",
+        "tags",
+    }
+    cleaned: dict[str, Any] = {}
+    for key, value in payload.items():
+        if key not in allowed_keys:
+            continue
+        if isinstance(value, str):
+            cleaned[key] = value.strip()[:2000]
+        elif isinstance(value, list):
+            cleaned[key] = [str(item)[:80] for item in value[:12]]
+        else:
+            cleaned[key] = value
+
+    cve = str(cleaned.get("cve_id", "")).strip().upper()
+    if cve and not re.fullmatch(r"CVE-\d{4}-\d{4,7}", cve):
+        cleaned.pop("cve_id", None)
+    elif cve:
+        cleaned["cve_id"] = cve
+
+    return cleaned
 
 
 def persist_event(event: EventPayload) -> int:
@@ -134,9 +170,14 @@ def evaluate_event(event_id: int, event: EventPayload) -> list[int]:
 
 
 def ingest_event(payload: dict[str, Any]) -> dict[str, Any]:
-    event = normalize_event(payload)
+    safe_payload = sanitize_event_payload(payload)
+    event = normalize_event(safe_payload)
     event_id = persist_event(event)
     alert_ids = evaluate_event(event_id, event)
+    events_per_minute = fetch_one(
+        "SELECT COUNT(*) AS total FROM events WHERE created_at >= datetime('now', '-1 minute')"
+    ) or {"total": 0}
+    save_metric("events_per_minute", str(events_per_minute["total"]))
     save_metric("last_ingest_at", utc_now_iso())
     return {"event_id": event_id, "alert_ids": alert_ids}
 
