@@ -1,4 +1,5 @@
-from backend.core.pipeline import normalize_event, sanitize_event_payload
+from backend.core.pipeline import event_to_rule_context, normalize_event, sanitize_event_payload
+from backend.core.rules_engine import load_rules
 
 
 def test_normalize_event_defaults():
@@ -28,3 +29,18 @@ def test_sanitize_invalid_cve_is_removed():
     )
 
     assert "cve_id" not in payload
+
+
+def test_rule_matching_supports_slotted_event_payload():
+    event = normalize_event(
+        {
+            "source": "auth-gateway",
+            "event_type": "failed_login",
+            "title": "Repeated login failure",
+            "message": "Multiple failed login attempts for admin user from an external IP.",
+            "severity": "medium",
+        }
+    )
+
+    rule_context = event_to_rule_context(event)
+    assert any(rule.matches(rule_context) for rule in load_rules())

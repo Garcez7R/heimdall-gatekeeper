@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+from dataclasses import asdict
 from datetime import datetime, timezone
 from typing import Any
 
@@ -144,11 +145,16 @@ def bump_rule_hit(rule_name: str) -> None:
     )
 
 
+def event_to_rule_context(event: EventPayload) -> dict[str, Any]:
+    return asdict(event)
+
+
 def evaluate_event(event_id: int, event: EventPayload) -> list[int]:
     alerts: list[int] = []
     cve_details = fetch_cve_details(event.cve_id) if event.cve_id else None
+    rule_context = event_to_rule_context(event)
     for rule in load_rules():
-        if not rule.matches(event.__dict__):
+        if not rule.matches(rule_context):
             continue
         bump_rule_hit(rule.name)
         alert_id = persist_alert(
