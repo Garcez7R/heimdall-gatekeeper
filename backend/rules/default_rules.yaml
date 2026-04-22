@@ -1,0 +1,24 @@
+- name: Brute Force Detection
+  pattern: "(failed login|invalid password|authentication failure)"
+  severity: high
+  title: Brute force suspected
+  description: Multiple authentication failures detected in the same signal path.
+  source_contains: auth
+  mitre_tag: T1110
+  cooldown_seconds: 120
+
+- name: Suspicious Privilege Escalation
+  pattern: "(sudo|privilege escalation|admin role granted)"
+  severity: critical
+  title: Privilege escalation signal
+  description: Sensitive role escalation or administrative elevation was detected.
+  mitre_tag: T1068
+  cooldown_seconds: 180
+
+- name: Known Vulnerability Reference
+  pattern: "CVE-\\d{4}-\\d+"
+  severity: medium
+  title: CVE reference observed
+  description: An event carries a vulnerability identifier and should be enriched with threat intelligence.
+  mitre_tag: T1595
+  cooldown_seconds: 60

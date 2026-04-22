@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Heimdall Gatekeeper</title>
+    <link rel="stylesheet" href="/assets/css/styles.css" />
+  </head>
+  <body>
+    <div id="splash" class="splash">
+      <div class="splash-rune">ᚺ</div>
+      <div class="splash-copy">
+        <h1>HEIMDALL GATEKEEPER</h1>
+        <p>[OK] Loading detection rules</p>
+        <p>[OK] Syncing CVE intelligence</p>
+        <p>[OK] Starting event pipeline</p>
+        <p>[OK] Building UI components</p>
+        <strong>All systems operational</strong>
+      </div>
+    </div>
+
+    <div class="app-shell" id="app" hidden>
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-rune">ᚺ</span>
+          <div>
+            <strong>Heimdall Gatekeeper</strong>
+            <small id="tagline">Minimal SIEM for Blue Teams</small>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <button class="nav-item active" data-view="overview">Overview</button>
+          <button class="nav-item" data-view="alerts">Alerts</button>
+          <button class="nav-item" data-view="events">Events</button>
+          <button class="nav-item" data-view="status">System Status</button>
+        </nav>
+
+        <div class="sidebar-controls">
+          <label>
+            <span>Language</span>
+            <select id="language-switcher">
+              <option value="pt-BR">🇧🇷 PT</option>
+              <option value="en">🇺🇸 EN</option>
+              <option value="es">🇪🇸 ES</option>
+            </select>
+          </label>
+          <label>
+            <span>Theme</span>
+            <select id="theme-switcher">
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+            </select>
+          </label>
+          <label>
+            <span>Density</span>
+            <select id="density-switcher">
+              <option value="comfortable">Comfortable</option>
+              <option value="compact">Compact</option>
+            </select>
+          </label>
+          <button class="toggle-btn" id="contrast-toggle">High contrast</button>
+          <button class="toggle-btn" id="motion-toggle">Reduce motion</button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Security Console</p>
+            <h2 id="view-title">Overview</h2>
+          </div>
+          <div class="topbar-status">
+            <span class="status-pill healthy" id="system-health">Healthy</span>
+            <span class="status-pill" id="uptime-pill">Uptime 0s</span>
+          </div>
+        </header>
+
+        <section class="view active" id="view-overview">
+          <div class="metric-grid" id="metric-grid"></div>
+          <div class="grid two-col">
+            <article class="panel">
+              <div class="panel-head">
+                <p class="eyebrow">Latest Alerts</p>
+                <h3>Priority queue</h3>
+              </div>
+              <div id="latest-alerts" class="stack"></div>
+            </article>
+            <article class="panel">
+              <div class="panel-head">
+                <p class="eyebrow">Threat Sources</p>
+                <h3>Top suspicious IPs</h3>
+              </div>
+              <div id="top-ips" class="stack"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="view-alerts">
+          <div class="table-toolbar">
+            <select id="alert-status-filter">
+              <option value="">All</option>
+              <option value="active">Active</option>
+              <option value="acknowledged">Acknowledged</option>
+              <option value="resolved">Resolved</option>
+            </select>
+            <button class="primary-btn" id="reload-alerts">Refresh</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Severity</th>
+                  <th>Rule</th>
+                  <th>Message</th>
+                  <th>Status</th>
+                  <th>Time</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="alerts-table"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="view-events">
+          <div class="table-toolbar">
+            <input id="event-search" type="search" placeholder="Search events..." />
+            <select id="event-severity-filter">
+              <option value="">All severities</option>
+              <option value="critical">Critical</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+            <button class="primary-btn" id="reload-events">Refresh</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Source</th>
+                  <th>Title</th>
+                  <th>Severity</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody id="events-table"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="view-status">
+          <div class="grid two-col">
+            <article class="panel">
+              <div class="panel-head">
+                <p class="eyebrow">Engine</p>
+                <h3>System snapshot</h3>
+              </div>
+              <pre id="status-json" class="json-card"></pre>
+            </article>
+            <article class="panel">
+              <div class="panel-head">
+                <p class="eyebrow">Live ingest</p>
+                <h3>Send a sample event</h3>
+              </div>
+              <form id="ingest-form" class="ingest-form">
+                <input name="source" value="auth-gateway" placeholder="Source" />
+                <input name="event_type" value="failed_login" placeholder="Event type" />
+                <input name="title" value="Repeated login failure" placeholder="Title" />
+                <textarea name="message" placeholder="Message">Multiple failed login attempts for admin user from external IP.</textarea>
+                <input name="ip_address" value="198.51.100.24" placeholder="IP address" />
+                <input name="cve_id" value="" placeholder="CVE-YYYY-NNNN" />
+                <select name="severity">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                  <option value="critical">Critical</option>
+                </select>
+                <button class="primary-btn" type="submit">Ingest test event</button>
+              </form>
+              <div id="ingest-result" class="inline-note"></div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/assets/js/app.js" defer></script>
+  </body>
+  </html>

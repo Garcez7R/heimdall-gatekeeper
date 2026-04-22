@@ -1,0 +1,9 @@
+{
+  "overview": "Resumen",
+  "alerts": "Alertas",
+  "events": "Eventos",
+  "status": "Estado del sistema",
+  "latestAlerts": "Alertas recientes",
+  "topIps": "IPs sospechosas",
+  "healthy": "Saludable"
+}

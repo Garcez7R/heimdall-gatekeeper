@@ -1,0 +1,10 @@
+services:
+  heimdall-gatekeeper:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: heimdall-gatekeeper
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../data:/app/data
