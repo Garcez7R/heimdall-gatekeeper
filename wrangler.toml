@@ -1,0 +1,8 @@
+name = "heimdall-gatekeeper"
+compatibility_date = "2026-04-22"
+pages_build_output_dir = "frontend"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "heimdall-gatekeeper"
+database_id = "replace-with-your-d1-id"

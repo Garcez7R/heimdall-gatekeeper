@@ -1,0 +1,30 @@
+export const demoEvents = [
+  {
+    source: "auth-gateway",
+    event_type: "failed_login",
+    title: "Repeated login failure",
+    message: "Multiple failed login attempts for admin user from an external IP.",
+    severity: "medium",
+    ip_address: "198.51.100.24",
+    tags: "auth,bruteforce,demo",
+  },
+  {
+    source: "identity-core",
+    event_type: "privilege_escalation",
+    title: "Unexpected admin elevation",
+    message: "A standard operator account received administrative privileges unexpectedly.",
+    severity: "critical",
+    ip_address: "203.0.113.18",
+    tags: "iam,privilege,demo",
+  },
+  {
+    source: "vuln-scanner",
+    event_type: "vulnerability_reference",
+    title: "Critical edge package exposure",
+    message: "Observed vulnerable package reference CVE-2024-3094 during inventory correlation.",
+    severity: "high",
+    cve_id: "CVE-2024-3094",
+    ip_address: "10.10.0.17",
+    tags: "cve,supply-chain,demo",
+  },
+];
