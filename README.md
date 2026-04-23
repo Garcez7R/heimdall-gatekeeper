@@ -96,16 +96,6 @@ npx wrangler d1 execute heimdall-gatekeeper --remote --file=cloudflare/d1/0001_i
 - [English](./README.md)
 - [Español](./README.es.md)
 
-## Why It Matters in the Portfolio
-
-This project was built to demonstrate practical capability across:
-
-- Blue Team workflow and detection thinking
-- SecOps-style event processing
-- security product UX and operational dashboards
-- Python backend organization with testing and CI
-- deployment thinking across local, container and cloud environments
-
 ## License
 
-Educational and portfolio use.
+All rights reserved. Unauthorized use, modification, copying, or distribution is prohibited.
