@@ -673,7 +673,7 @@ async function bootstrap() {
   updateClock();
   window.setInterval(updateClock, 1000);
 
-  window.setTimeout(revealApp, config.splash_duration_ms || 1200);
+  revealApp();
 }
 
 bootstrap().catch((error) => {
