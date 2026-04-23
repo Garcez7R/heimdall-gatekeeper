@@ -133,8 +133,10 @@ function pushToast(message, tone = "error") {
 function revealApp() {
   if (appRevealed) return;
   appRevealed = true;
-  document.getElementById("splash").hidden = true;
-  document.getElementById("app").hidden = false;
+  const splash = document.getElementById("splash");
+  if (splash) splash.hidden = true;
+  const app = document.getElementById("app");
+  if (app) app.hidden = false;
 }
 
 function setView(view) {
