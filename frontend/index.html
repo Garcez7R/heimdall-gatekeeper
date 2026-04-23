@@ -7,6 +7,7 @@
     <meta name="description" content="Minimal SIEM console for Blue Teams, focused on alert triage, event intake, and operational visibility." />
     <link rel="icon" type="image/png" href="/assets/img/logo.png" />
     <link rel="stylesheet" href="/assets/css/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
   </head>
   <body>
     <div class="toast-stack" id="toast-stack" aria-live="polite" aria-atomic="true"></div>
@@ -145,7 +146,7 @@
                 <p class="eyebrow" data-i18n="threatSources">Threat Sources</p>
                 <h3 data-i18n="topIps">Top suspicious IPs</h3>
               </div>
-              <div id="top-ips" class="stack"></div>
+              <canvas id="chart-top-ips" style="max-height: 300px;"></canvas>
             </article>
 
             <article class="panel">
@@ -163,7 +164,7 @@
                 <p class="eyebrow" data-i18n="timeline">Timeline</p>
                 <h3 data-i18n="eventFlow">Event flow</h3>
               </div>
-              <div id="timeline-bars" class="timeline-bars"></div>
+              <canvas id="chart-timeline" style="max-height: 280px;"></canvas>
             </article>
 
             <article class="panel">

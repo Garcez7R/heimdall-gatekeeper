@@ -50,20 +50,71 @@ These improvements move the project beyond a basic demo toward a polished securi
 - robust alert filters for status and severity
 - event search, severity filtering and source selection
 - top-line summary cards for alert and event views
+- interactive Chart.js visualizations for event flow and threat sources
 - clean enterprise dashboard presentation for analysts and SOC operators
 
+## Technical Architecture
+
+**Detection & Events:**
+- YAML-based detection rules with regex pattern matching
+- SQLite-backed alert lifecycle management
+- Real-time CVE enrichment via NVD integration
+- Multi-field event normalization for standard ingestion
+
+**Frontend:**
+- Vanilla JavaScript with no build step
+- Enterprise dark/light theme with accessibility controls
+- Responsive dashboard with independent sidebar and content scrolling
+- Internationalization support (pt-BR, en, es)
+
+**Backend:**
+- FastAPI with modular route organization
+- Pydantic schemas for payload validation
+- Automated demo bootstrap for showcase mode
+- CI/CD pipeline with linting, formatting, SAST, and Docker builds
+
+## Advanced Roadmap (3-month planning)
+
+### Phase 1: Core Persistence & Stability
+- **D1 Integration**: Move from in-memory demo to persistent Cloudflare D1 storage
+- **Payload Validation**: Enhance Pydantic schemas to catch malformed event data early
+- **Rate Limiting**: Protect ingest endpoints from DoS attacks via IP-based throttling
+- **Current Status**: ✅ Backend API ready, D1 schema prepared in `cloudflare/d1/0001_init.sql`
+
+### Phase 2: Advanced Visualizations & UX
+- **Chart.js Enhancements**: Timeline graphs for event flow, threat source composition (✅ Added)
+- **Custom Alerts**: Real-time Slack/Discord webhook integration for critical detections
+- **Alert Deduplication**: Reduce noise by grouping correlated alerts
+- **MITRE ATT&CK Mapping**: Visually tag detections with MITRE tactics and techniques
+
+### Phase 3: Production Hardening
+- **Sigma Rule Support**: Parse industry-standard Sigma rules into Heimdall format
+- **ECS Normalization**: Adopt Elastic Common Schema for field consistency
+- **Behavioral Detection**: Multi-stage correlation (e.g., N failed logins → 1 success in T minutes)
+- **JWT Authentication**: Secure dashboard with Cloudflare Access or custom token validation
+- **KV Cache Layer**: Use Cloudflare KV for fast threat intel lookups during ingestion
+- **Queue Processing**: Async event processing via Cloudflare Queues for high-volume environments
+
+## Why This Project Validates Blue Team Competencies
+
+This project demonstrates advanced security engineering beyond "tool usage":
+
+| Competency | Evidence |
+|---|---|
+| **Log Analysis** | Custom YAML rules, field extraction, severity scoring |
+| **Detection Engineering** | Regex patterns, multi-source correlation, alert tuning |
+| **Threat Intelligence** | CVE enrichment, IP reputation tracking, MITRE mapping |
+| **Incident Response** | Alert triage, acknowledge/resolve workflows, prioritization |
+| **Infrastructure as Code** | Docker, GitHub Actions, SQLite schema versioning |
+| **Modern Security** | Detection as Code (YAML), DevSecOps automation, event normalization |
+
+## For Blue Team Interviewers
+
+If asked about this project, frame it as:
+
+> "I built Heimdall Gatekeeper to understand the full pipeline of a SIEM—from event ingestion to detection to alerting. I implemented detection rules in YAML, created a schema for normalized events, and integrated threat intelligence enrichment. This gave me hands-on experience in log correlation, false positive tuning, and incident response workflow automation—skills critical for SOC engineering."
+
 ## Future roadmap
-
-Suggested next steps for even stronger enterprise value:
-
-- Cloudflare D1 persistence for event and alert storage in production
-- tighter Pydantic validation for ingestion schema robustness
-- rich visualizations using Chart.js or ApexCharts for threat timelines and source composition
-- ingest feedback toasts for real-time operator acknowledgement
-- MITRE ATT&CK-based detection rules library
-- authentication and access control for enterprise deployment
-
-## Quick Access
 
 ### Local
 

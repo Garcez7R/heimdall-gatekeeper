@@ -15,6 +15,11 @@ const state = {
 
 let appRevealed = false;
 
+const charts = {
+  timeline: null,
+  topIps: null,
+};
+
 const ingestPresets = [
   {
     source: "auth-gateway",
@@ -367,44 +372,121 @@ function renderEventsSummary(rows) {
 }
 
 function renderTopIps(rows) {
-  const entries = (rows || []).slice(0, 6);
-  document.getElementById("top-ips").innerHTML = entries.length
-    ? entries
-        .map(
-          (row) => `
-            <article class="stack-item">
-              <div class="row">
-                <strong>${escapeHtml(row.ip_address || "unknown")}</strong>
-                <span>${escapeHtml(row.total)} ${escapeHtml(text("hits", "hits"))}</span>
-              </div>
-            </article>
-          `
-        )
-        .join("")
-    : `<div class="stack-item">${escapeHtml(text("noThreatSources", "No suspicious IPs yet."))}</div>`;
-}
+  const entries = (rows || []).slice(0, 8);
+  const canvasEl = document.getElementById("chart-top-ips");
+  if (!canvasEl) return;
 
-function renderTimeline(points) {
-  const container = document.getElementById("timeline-bars");
-  if (!points?.length) {
-    container.innerHTML = `<div class="stack-item">${escapeHtml(text("noTimeline", "Timeline will populate as events are ingested."))}</div>`;
+  if (!entries.length) {
+    if (charts.topIps) {
+      charts.topIps.destroy();
+      charts.topIps = null;
+    }
+    canvasEl.style.display = "none";
     return;
   }
 
-  const max = Math.max(...points.map((item) => Number(item.total || 0)), 1);
-  container.innerHTML = points
-    .map((item) => {
-      const total = Number(item.total || 0);
-      const height = Math.max(10, Math.round((total / max) * 100));
-      return `
-        <div class="timeline-bar">
-          <div class="timeline-bar-fill" style="height:${height}%"></div>
-          <strong>${total}</strong>
-          <span>${escapeHtml(String(item.bucket).slice(11, 16))}</span>
-        </div>
-      `;
-    })
-    .join("");
+  canvasEl.style.display = "block";
+  const labels = entries.map((row) => (row.ip_address || "unknown").substring(0, 15));
+  const data = entries.map((row) => Number(row.total || 0));
+  const ctx = canvasEl.getContext("2d");
+
+  if (charts.topIps) charts.topIps.destroy();
+
+  charts.topIps = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: text("hits", "Hits"),
+          data,
+          backgroundColor: "rgba(125, 211, 246, 0.32)",
+          borderColor: "rgba(125, 211, 246, 0.72)",
+          borderWidth: 1,
+          borderRadius: 8,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      indexAxis: "y",
+      plugins: {
+        legend: { display: false },
+      },
+      scales: {
+        x: {
+          ticks: { color: "rgba(255, 255, 255, 0.6)" },
+          grid: { color: "rgba(255, 255, 255, 0.1)" },
+        },
+        y: {
+          ticks: { color: "rgba(255, 255, 255, 0.6)" },
+          grid: { display: false },
+        },
+      },
+    },
+  });
+}
+
+function renderTimeline(points) {
+  const canvasEl = document.getElementById("chart-timeline");
+  if (!canvasEl) return;
+
+  if (!points?.length) {
+    if (charts.timeline) {
+      charts.timeline.destroy();
+      charts.timeline = null;
+    }
+    canvasEl.style.display = "none";
+    return;
+  }
+
+  canvasEl.style.display = "block";
+  const labels = points.map((item) => String(item.bucket).slice(11, 16));
+  const data = points.map((item) => Number(item.total || 0));
+  const ctx = canvasEl.getContext("2d");
+
+  if (charts.timeline) charts.timeline.destroy();
+
+  charts.timeline = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: text("events", "Events"),
+          data,
+          borderColor: "rgba(125, 211, 246, 0.8)",
+          backgroundColor: "rgba(125, 211, 246, 0.12)",
+          borderWidth: 2,
+          fill: true,
+          pointRadius: 4,
+          pointBackgroundColor: "rgba(125, 211, 246, 0.8)",
+          pointBorderColor: "rgba(20, 30, 50, 0.95)",
+          pointBorderWidth: 2,
+          tension: 0.4,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: { display: true, labels: { color: "rgba(255, 255, 255, 0.7)" } },
+      },
+      scales: {
+        x: {
+          ticks: { color: "rgba(255, 255, 255, 0.6)" },
+          grid: { color: "rgba(255, 255, 255, 0.08)" },
+        },
+        y: {
+          ticks: { color: "rgba(255, 255, 255, 0.6)" },
+          grid: { color: "rgba(255, 255, 255, 0.08)" },
+          beginAtZero: true,
+        },
+      },
+    },
+  });
 }
 
 function renderTopCves(rows) {
