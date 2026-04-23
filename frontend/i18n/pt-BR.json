@@ -72,6 +72,7 @@
   "consoleRefreshed": "Console atualizado com sucesso.",
   "alertActionSuccess": "Alerta atualizado com sucesso.",
   "ingestSuccess": "Evento de teste ingerido com sucesso.",
+  "demoLoaded": "Dados demo carregados para o console ao vivo.",
   "consoleNoteStable": "Fluxo de sinais estável. Monitorando ingestão ao vivo, fila de alertas e pressão de detecção.",
   "consoleNoteAlerting": "A fila de alertas está ativa. Revise os itens prioritários e confirme a cobertura de triagem.",
   "notAvailable": "n/d",

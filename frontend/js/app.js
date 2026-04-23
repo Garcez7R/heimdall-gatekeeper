@@ -427,6 +427,40 @@ async function loadOverview() {
   updateConsoleHeader(overview);
 }
 
+function overviewNeedsBootstrap(overview) {
+  return (
+    Number(overview?.status?.events_total || 0) === 0 &&
+    Number(overview?.status?.active_alerts || 0) === 0 &&
+    Number(overview?.status?.critical_alerts || 0) === 0 &&
+    (!overview?.latest_events || overview.latest_events.length === 0) &&
+    (!overview?.latest_alerts || overview.latest_alerts.length === 0)
+  );
+}
+
+async function ensureDemoBootstrap() {
+  try {
+    const overview = await request("/api/overview");
+    if (!overviewNeedsBootstrap(overview)) {
+      state.lastOverview = overview;
+      renderMetrics(overview);
+      renderRuleHits(overview.status.rule_hits || []);
+      renderLatestAlerts(overview.latest_alerts || []);
+      renderLatestEvents(overview.latest_events || []);
+      renderTopIps(overview.top_ips || []);
+      renderTimeline(overview.timeline || []);
+      renderTopCves(overview.top_cves || []);
+      renderStatusSummary(overview);
+      updateConsoleHeader(overview);
+      return;
+    }
+
+    await request("/api/demo/bootstrap");
+    pushToast(text("demoLoaded", "Demo data loaded for the live console."), "success");
+  } catch (error) {
+    pushToast(error.message, "error");
+  }
+}
+
 async function loadAlerts() {
   const status = document.getElementById("alert-status-filter").value;
   const payload = await request(`/api/alerts${status ? `?status=${encodeURIComponent(status)}` : ""}`);
@@ -619,6 +653,7 @@ async function bootstrap() {
   await loadLanguage(state.language);
   buildPresetButtons();
   bindEvents();
+  await ensureDemoBootstrap();
   await refreshAll(true);
   installAutoRefresh();
   updateClock();

@@ -5,3 +5,8 @@ export async function onRequestPost({ env }) {
   await ensureSeed(env);
   return json({ status: "ok" });
 }
+
+export async function onRequestGet({ env }) {
+  await ensureSeed(env);
+  return json({ status: "ok" });
+}

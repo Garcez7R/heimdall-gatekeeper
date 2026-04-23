@@ -11,6 +11,7 @@ from backend.core.seed import seed_demo_data_if_empty
 router = APIRouter(tags=["demo"])
 
 
+@router.get("/api/demo/bootstrap")
 @router.post("/api/demo/bootstrap")
 def bootstrap_demo() -> dict[str, str]:
     seed_demo_data_if_empty()

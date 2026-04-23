@@ -72,6 +72,7 @@
   "consoleRefreshed": "Console refreshed successfully.",
   "alertActionSuccess": "Alert updated successfully.",
   "ingestSuccess": "Sample event ingested successfully.",
+  "demoLoaded": "Demo data loaded for the live console.",
   "consoleNoteStable": "Signal flow stable. Monitoring live ingestion, alert queue and detection pressure.",
   "consoleNoteAlerting": "Alert queue is active. Review priority items and confirm triage coverage.",
   "notAvailable": "n/a",
