@@ -20,13 +20,20 @@ def get_database_path() -> Path:
 
 @contextmanager
 def get_connection() -> Iterator[sqlite3.Connection]:
-    connection = sqlite3.connect(get_database_path())
+    connection = sqlite3.connect(get_database_path(), timeout=30, check_same_thread=False)
     connection.row_factory = sqlite3.Row
+    connection.execute("PRAGMA foreign_keys = ON")
     try:
         yield connection
         connection.commit()
     finally:
         connection.close()
+
+
+def execute_with_rowcount(query: str, parameters: tuple[Any, ...] = ()) -> int:
+    with get_connection() as connection:
+        cursor = connection.execute(query, parameters)
+        return cursor.rowcount
 
 
 SCHEMA = """

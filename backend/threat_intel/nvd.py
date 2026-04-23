@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -33,18 +34,26 @@ def fetch_cve_details(cve_id: str) -> dict[str, Any] | None:
         return cached
 
     try:
-        response = requests.get(
-            "https://services.nvd.nist.gov/rest/json/cves/2.0",
-            params={"cveId": cve_id},
-            timeout=8,
-        )
-        response.raise_for_status()
-        body = response.json()
-        vulnerabilities = body.get("vulnerabilities", [])
-        if not vulnerabilities:
-            return None
-        cve = vulnerabilities[0].get("cve", {})
-        metrics = cve.get("metrics", {})
+        session = requests.Session()
+        for attempt in range(3):
+            try:
+                response = session.get(
+                    "https://services.nvd.nist.gov/rest/json/cves/2.0",
+                    params={"cveId": cve_id},
+                    timeout=8,
+                )
+                response.raise_for_status()
+                body = response.json()
+                vulnerabilities = body.get("vulnerabilities", [])
+                if not vulnerabilities:
+                    return None
+                cve = vulnerabilities[0].get("cve", {})
+                metrics = cve.get("metrics", {})
+                break
+            except (requests.RequestException, ValueError):
+                if attempt == 2:
+                    return None
+                time.sleep(0.5 * (attempt + 1))
         cvss_block = (
             metrics.get("cvssMetricV31", [{}])[0]
             or metrics.get("cvssMetricV30", [{}])[0]

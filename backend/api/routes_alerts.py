@@ -16,11 +16,15 @@ def alerts(limit: int = Query(default=100, le=500), status: str = "") -> dict[st
 
 @router.post("/api/alerts/{alert_id}/acknowledge")
 def acknowledge_alert(alert_id: int, payload: AlertAction) -> dict[str, str]:
-    update_alert_status(alert_id, "acknowledged", payload.actor)
+    rows_updated = update_alert_status(alert_id, "acknowledged", payload.actor)
+    if rows_updated == 0:
+        raise HTTPException(status_code=404, detail="Alert not found")
     return {"status": "acknowledged"}
 
 
 @router.post("/api/alerts/{alert_id}/resolve")
 def resolve_alert(alert_id: int, payload: AlertAction) -> dict[str, str]:
-    update_alert_status(alert_id, "resolved", payload.actor)
+    rows_updated = update_alert_status(alert_id, "resolved", payload.actor)
+    if rows_updated == 0:
+        raise HTTPException(status_code=404, detail="Alert not found")
     return {"status": "resolved"}

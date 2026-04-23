@@ -9,7 +9,7 @@ from typing import Any
 from backend.core.metrics import save_metric
 from backend.core.models import AlertPayload, EventPayload
 from backend.core.rules_engine import load_rules
-from backend.storage.db import execute, fetch_all, fetch_one
+from backend.storage.db import execute, execute_with_rowcount, fetch_all, fetch_one
 from backend.threat_intel.nvd import fetch_cve_details
 
 
@@ -214,9 +214,9 @@ def list_alerts(limit: int = 100, status: str = "") -> list[dict[str, Any]]:
     return fetch_all(query, tuple(params))
 
 
-def update_alert_status(alert_id: int, status: str, actor: str) -> None:
+def update_alert_status(alert_id: int, status: str, actor: str) -> int:
     field = "acknowledged_by" if status == "acknowledged" else "resolved_by"
-    execute(
+    return execute_with_rowcount(
         f"UPDATE alerts SET status = ?, {field} = ?, updated_at = ? WHERE id = ?",
         (status, actor, utc_now_iso(), alert_id),
     )

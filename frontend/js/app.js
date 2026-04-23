@@ -656,7 +656,6 @@ function bindEvents() {
 }
 
 async function bootstrap() {
-  window.setTimeout(revealApp, 2200);
   readStoredPreferences();
   const config = await request("/api/config");
   document.getElementById("tagline").textContent = config.tagline;

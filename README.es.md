@@ -18,7 +18,7 @@
 ![CI](https://img.shields.io/github/actions/workflow/status/Garcez7R/heimdall-gatekeeper/ci.yml?branch=main&style=for-the-badge&label=CI)
 ![Cloudflare](https://img.shields.io/badge/Cloudflare-Pages%20%2B%20Functions%20%2B%20D1-0f172a?style=for-the-badge&logo=cloudflare&logoColor=f59e0b)
 
-Mini-SIEM creado para demostración de portafolio en Blue Team, SecOps y DevSecOps. Heimdall Gatekeeper fue diseñado para ser ligero, fácil de ejecutar y visualmente sólido, sin perder los mecanismos centrales de una consola de seguridad real: ingestión de eventos, detección por reglas, triaje de alertas, contexto de CVE y visibilidad operativa.
+Heimdall Gatekeeper es una demostración práctica de SIEM con una consola visual clara, instalación sencilla y comportamiento real de seguridad. Está pensado para que cualquier persona pueda ver rápidamente cómo entran los eventos, cómo actúan las reglas y cómo aparece el contexto de vulnerabilidades en el panel. No hace falta experiencia previa en seguridad: solo ejecuta la aplicación y explora el tablero.
 
 ## Qué Demuestra Este Proyecto
 
@@ -50,6 +50,7 @@ Es un proyecto compacto, pero ya se comporta como un producto orientado a seguri
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt -r requirements-dev.txt
+# requirements-dev.txt incluye herramientas de prueba y calidad, pero la app funciona con requirements.txt sola
 cp .env.example .env
 uvicorn backend.api.main:app --reload
 ```
