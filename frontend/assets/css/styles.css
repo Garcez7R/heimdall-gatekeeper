@@ -411,6 +411,36 @@ button, input, select, textarea { font: inherit; }
 .two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .three-col { grid-template-columns: 1.05fr 1fr 1fr; }
 
+.section-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.summary-card {
+  padding: 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.summary-card .row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+
+.summary-card strong {
+  font-size: 1.55rem;
+}
+
+.summary-card small {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
 .panel {
   padding: 18px;
   display: grid;

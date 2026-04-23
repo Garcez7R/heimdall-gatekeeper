@@ -202,7 +202,37 @@
               <option value="acknowledged">Acknowledged</option>
               <option value="resolved">Resolved</option>
             </select>
+            <select id="alert-severity-filter">
+              <option value="">All severities</option>
+              <option value="critical">Critical</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
             <button class="primary-btn" id="reload-alerts" data-i18n="manualRefresh">Refresh now</button>
+          </div>
+          <div class="grid three-col section-summary" id="alerts-summary">
+            <div class="summary-card">
+              <div class="row">
+                <strong>Alerts</strong>
+                <span id="alerts-summary-total">0</span>
+              </div>
+              <small>Matching alerts in the current filter view.</small>
+            </div>
+            <div class="summary-card">
+              <div class="row">
+                <strong id="alerts-summary-active">0</strong>
+                <span>Active</span>
+              </div>
+              <small>Alerts requiring triage or response.</small>
+            </div>
+            <div class="summary-card">
+              <div class="row">
+                <strong id="alerts-summary-high">0</strong>
+                <span>High/Critical</span>
+              </div>
+              <small>Higher-severity alerts in the current table.</small>
+            </div>
           </div>
           <div class="table-wrap">
             <table>
@@ -231,7 +261,33 @@
               <option value="medium">Medium</option>
               <option value="low">Low</option>
             </select>
+            <select id="event-source-filter">
+              <option value="">All sources</option>
+            </select>
             <button class="primary-btn" id="reload-events" data-i18n="manualRefresh">Refresh now</button>
+          </div>
+          <div class="grid three-col section-summary" id="events-summary">
+            <div class="summary-card">
+              <div class="row">
+                <strong>Events</strong>
+                <span id="events-summary-total">0</span>
+              </div>
+              <small>Events loaded for this filter view.</small>
+            </div>
+            <div class="summary-card">
+              <div class="row">
+                <strong id="events-summary-sources">0</strong>
+                <span>Sources</span>
+              </div>
+              <small>Distinct ingestion sources in view.</small>
+            </div>
+            <div class="summary-card">
+              <div class="row">
+                <strong id="events-summary-severity">0</strong>
+                <span>High/Critical</span>
+              </div>
+              <small>Higher-severity events in current results.</small>
+            </div>
           </div>
           <div class="table-wrap">
             <table>

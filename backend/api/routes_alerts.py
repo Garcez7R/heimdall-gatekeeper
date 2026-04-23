@@ -10,8 +10,12 @@ router = APIRouter(tags=["alerts"])
 
 
 @router.get("/api/alerts")
-def alerts(limit: int = Query(default=100, le=500), status: str = "") -> dict[str, object]:
-    return {"rows": list_alerts(limit=limit, status=status)}
+def alerts(
+    limit: int = Query(default=100, le=500),
+    status: str = "",
+    severity: str = "",
+) -> dict[str, object]:
+    return {"rows": list_alerts(limit=limit, status=status, severity=severity)}
 
 
 @router.post("/api/alerts/{alert_id}/acknowledge")

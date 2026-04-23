@@ -339,6 +339,33 @@ function renderLatestEvents(rows) {
     .join("");
 }
 
+function renderAlertsSummary(rows) {
+  const total = rows.length;
+  const active = rows.filter((row) => String(row.status).toLowerCase() === "active").length;
+  const highSeverity = rows.filter((row) => ["high", "critical"].includes(String(row.severity).toLowerCase())).length;
+  document.getElementById("alerts-summary-total").textContent = total;
+  document.getElementById("alerts-summary-active").textContent = active;
+  document.getElementById("alerts-summary-high").textContent = highSeverity;
+}
+
+function renderEventSourceOptions(rows) {
+  const sourceSelect = document.getElementById("event-source-filter");
+  const current = sourceSelect.value;
+  const sources = [...new Set(rows.map((row) => row.source).filter(Boolean))].sort();
+  sourceSelect.innerHTML = `<option value="">All sources</option>` +
+    sources.map((source) => `<option value="${escapeHtml(source)}">${escapeHtml(source)}</option>`).join("");
+  sourceSelect.value = current;
+}
+
+function renderEventsSummary(rows) {
+  const total = rows.length;
+  const sources = new Set(rows.map((row) => row.source).filter(Boolean)).size;
+  const highSeverity = rows.filter((row) => ["high", "critical"].includes(String(row.severity).toLowerCase())).length;
+  document.getElementById("events-summary-total").textContent = total;
+  document.getElementById("events-summary-sources").textContent = sources;
+  document.getElementById("events-summary-severity").textContent = highSeverity;
+}
+
 function renderTopIps(rows) {
   const entries = (rows || []).slice(0, 6);
   document.getElementById("top-ips").innerHTML = entries.length
@@ -477,8 +504,14 @@ async function ensureDemoBootstrap() {
 
 async function loadAlerts() {
   const status = document.getElementById("alert-status-filter").value;
-  const payload = await request(`/api/alerts${status ? `?status=${encodeURIComponent(status)}` : ""}`);
-  document.getElementById("alerts-table").innerHTML = payload.rows
+  const severity = document.getElementById("alert-severity-filter").value;
+  const query = new URLSearchParams();
+  if (status) query.set("status", status);
+  if (severity) query.set("severity", severity);
+  const payload = await request(`/api/alerts?${query.toString()}`);
+  const rows = payload.rows || [];
+  renderAlertsSummary(rows);
+  document.getElementById("alerts-table").innerHTML = rows
     .map(
       (row) => `
         <tr>
@@ -500,11 +533,16 @@ async function loadAlerts() {
 async function loadEvents() {
   const search = document.getElementById("event-search").value;
   const severity = document.getElementById("event-severity-filter").value;
+  const source = document.getElementById("event-source-filter").value;
   const query = new URLSearchParams();
   if (search) query.set("search", search);
   if (severity) query.set("severity", severity);
   const payload = await request(`/api/events?${query.toString()}`);
-  document.getElementById("events-table").innerHTML = payload.rows
+  const allRows = payload.rows || [];
+  renderEventSourceOptions(allRows);
+  const rows = allRows.filter((row) => !source || row.source === source);
+  renderEventsSummary(rows);
+  document.getElementById("events-table").innerHTML = rows
     .map(
       (row) => `
         <tr>
@@ -594,8 +632,10 @@ function bindEvents() {
   document.getElementById("reload-alerts").addEventListener("click", loadAlerts);
   document.getElementById("reload-events").addEventListener("click", loadEvents);
   document.getElementById("alert-status-filter").addEventListener("change", loadAlerts);
+  document.getElementById("alert-severity-filter").addEventListener("change", loadAlerts);
   document.getElementById("event-search").addEventListener("input", loadEvents);
   document.getElementById("event-severity-filter").addEventListener("change", loadEvents);
+  document.getElementById("event-source-filter").addEventListener("change", loadEvents);
 
   document.getElementById("language-switcher").addEventListener("change", (event) => loadLanguage(event.target.value));
   document.getElementById("theme-switcher").addEventListener("change", (event) => {

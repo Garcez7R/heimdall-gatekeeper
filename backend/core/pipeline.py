@@ -203,12 +203,15 @@ def list_events(limit: int = 100, search: str = "", severity: str = "") -> list[
     return fetch_all(query, tuple(params))
 
 
-def list_alerts(limit: int = 100, status: str = "") -> list[dict[str, Any]]:
+def list_alerts(limit: int = 100, status: str = "", severity: str = "") -> list[dict[str, Any]]:
     query = "SELECT * FROM alerts WHERE 1=1"
     params: list[Any] = []
     if status:
         query += " AND status = ?"
         params.append(status)
+    if severity:
+        query += " AND severity = ?"
+        params.append(severity)
     query += " ORDER BY created_at DESC LIMIT ?"
     params.append(limit)
     return fetch_all(query, tuple(params))

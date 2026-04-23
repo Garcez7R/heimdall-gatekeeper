@@ -37,10 +37,31 @@ This is a compact project, but it behaves like a serious security-oriented produ
 - SQLite persistence for events, alerts, metrics and rule hits
 - Pages Functions + D1 path prepared for Cloudflare deployment
 - live dashboard with overview, alerts, events and status views
+- enterprise-style alert and event pages with summary cards, severity filters and source breakdown
 - automatic demo bootstrap for immediate showcase use
 - dark/light theme, density control, high contrast and reduced motion
 - multilingual UI: `pt-BR`, `en`, `es`
 - CI pipeline with lint, formatting, SAST, dependency audit, tests and Docker build
+
+## Enterprise-ready enhancements
+
+These improvements move the project beyond a basic demo toward a polished security console:
+
+- robust alert filters for status and severity
+- event search, severity filtering and source selection
+- top-line summary cards for alert and event views
+- clean enterprise dashboard presentation for analysts and SOC operators
+
+## Future roadmap
+
+Suggested next steps for even stronger enterprise value:
+
+- Cloudflare D1 persistence for event and alert storage in production
+- tighter Pydantic validation for ingestion schema robustness
+- rich visualizations using Chart.js or ApexCharts for threat timelines and source composition
+- ingest feedback toasts for real-time operator acknowledgement
+- MITRE ATT&CK-based detection rules library
+- authentication and access control for enterprise deployment
 
 ## Quick Access
 
