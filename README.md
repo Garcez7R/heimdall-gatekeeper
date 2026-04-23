@@ -14,30 +14,44 @@
 ![i18n](https://img.shields.io/badge/i18n-PT--BR%20%7C%20EN%20%7C%20ES-0f172a?style=for-the-badge&logo=googletranslate&logoColor=93c5fd)
 ![Accessibility](https://img.shields.io/badge/A11y-High%20Contrast%20%26%20Reduce%20Motion-0f172a?style=for-the-badge&logo=dependabot&logoColor=86efac)
 
-Enterprise-style mini-SIEM focused on Blue Team, SecOps and DevSecOps portfolio value. Heimdall Gatekeeper stays intentionally lightweight while still delivering event ingestion, YAML-based detections, alerting, CVE enrichment, operational metrics and a professional dashboard.
+Minimal SIEM built for Blue Team, SecOps and DevSecOps portfolio demonstration. Heimdall Gatekeeper was designed to be lightweight, readable and easy to run, while still showing the core mechanics of a real security console: event ingestion, rule-based detection, alert triage, CVE context, operational metrics and a polished dashboard.
 
-## Highlights
+## What This Project Demonstrates
+
+Heimdall Gatekeeper was built as a practical mini-SIEM with emphasis on:
+
+- normalized event ingestion from structured inputs
+- YAML-based detection rules with severity escalation
+- alert lifecycle handling for acknowledge and resolve flows
+- CVE-aware enrichment for vulnerability-linked events
+- operational metrics and overview telemetry
+- dashboard UX designed for analysts and technical stakeholders
+- local runtime, Docker workflow and Cloudflare deployment path
+
+It is intentionally compact, but it already behaves like a serious security-oriented product rather than a simple CRUD demo.
+
+## Core Capabilities
 
 - FastAPI backend with modular API routes
-- YAML detection rules with regex matching and severity escalation
-- SQLite persistence for events, alerts, rule hits and cached CVE intelligence
-- D1-ready Cloudflare path via Pages Functions and D1 schema
-- Enterprise dashboard with dark/light mode, i18n and accessibility toggles
-- Demo bootstrap data for immediate presentation and pilot testing
-- Docker, GitHub Actions, Bandit and dependency audit in CI
-- Environment-based configuration overrides via `.env`
+- SQLite persistence for events, alerts, metrics and rule hits
+- Pages Functions + D1 path prepared for Cloudflare deployment
+- live dashboard with overview, alerts, events and status views
+- demo bootstrap for immediate showcase use
+- dark/light theme, density control, high contrast and reduced motion
+- multilingual UI: `pt-BR`, `en`, `es`
+- CI pipeline with lint, formatting, SAST, dependency audit, tests and Docker build
 
 ## Architecture
 
 ```text
-Log / JSON Event
+Structured Event
       |
       v
-Normalization -> Rule Engine -> Alert Store -> Overview API -> Web Console
+Normalization -> Rule Engine -> Alert Store -> Overview API -> Security Console
       |                |               |
-      |                |               +-> Active alerts / status / metrics
-      |                +-> CVE enrichment cache
-      +-> SQLite or D1-backed event store
+      |                |               +-> live metrics, triage and status
+      |                +-> CVE-linked detection context
+      +-> SQLite or D1-backed event persistence
 ```
 
 ## Project Structure
@@ -45,25 +59,22 @@ Normalization -> Rule Engine -> Alert Store -> Overview API -> Web Console
 ```text
 heimdall-gatekeeper/
 ├── backend/
-│   ├── api/
-│   ├── core/
-│   ├── rules/
-│   ├── storage/
-│   └── threat_intel/
+│   ├── api/            # FastAPI entrypoint, routes, schemas and error handling
+│   ├── core/           # pipeline, config, metrics, models, seed logic
+│   ├── rules/          # YAML detection rules
+│   ├── storage/        # SQLite access layer
+│   └── threat_intel/   # CVE enrichment helpers
 ├── cloudflare/
-│   └── d1/
-├── config/
-├── docker/
-├── frontend/
-│   ├── css/
-│   ├── i18n/
-│   └── js/
-├── functions/
-├── tests/
-└── .github/workflows/
+│   └── d1/             # D1 schema for remote mode
+├── config/             # app configuration
+├── docker/             # container runtime files
+├── frontend/           # static dashboard assets
+├── functions/          # Cloudflare Pages Functions
+├── tests/              # automated tests
+└── .github/workflows/  # CI pipeline
 ```
 
-## Run Locally
+## Local Access
 
 ### 1. Prepare the environment
 
@@ -74,7 +85,7 @@ pip install -r requirements.txt -r requirements-dev.txt
 cp .env.example .env
 ```
 
-### 2. Start the API + dashboard
+### 2. Start the application
 
 ```bash
 uvicorn backend.api.main:app --reload
@@ -84,17 +95,22 @@ Open:
 
 - `http://127.0.0.1:8000`
 
-The backend serves the frontend directly, so local access is a single URL.
+The FastAPI application serves both the API and the dashboard, so local access is a single URL.
 
-### 3. Bootstrap demo data manually if needed
+### 3. Demo mode
 
-The app auto-seeds when the database is empty. You can also trigger it manually:
+The project auto-seeds demo data when the database is empty. You can also trigger the demo bootstrap directly:
+
+- browser: `http://127.0.0.1:8000/api/demo/bootstrap`
+- terminal:
 
 ```bash
-curl -X POST http://127.0.0.1:8000/api/demo/bootstrap
+curl http://127.0.0.1:8000/api/demo/bootstrap
 ```
 
-### 4. Example test event
+After that, return to the main page and the dashboard will load with sample events and alerts.
+
+### 4. Ingest a test event manually
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/events/ingest \
@@ -109,14 +125,16 @@ curl -X POST http://127.0.0.1:8000/api/events/ingest \
   }'
 ```
 
-## Run with Docker
+## Docker Access
+
+### Build manually
 
 ```bash
 docker build -f docker/Dockerfile -t heimdall-gatekeeper .
 docker run -p 8000:8000 heimdall-gatekeeper
 ```
 
-Or:
+### Or use Docker Compose
 
 ```bash
 docker compose -f docker/docker-compose.yml up --build
@@ -126,13 +144,13 @@ Then open:
 
 - `http://127.0.0.1:8000`
 
-## Cloudflare Deployment
+## Cloudflare Access
 
-Heimdall is prepared to run online with:
+Heimdall Gatekeeper is prepared to run online with:
 
-- `Pages` for the static console
-- `Pages Functions` for API routes
-- `D1` for storage
+- `Pages` for the dashboard
+- `Pages Functions` for the API layer
+- `D1` for remote persistence
 
 ### 1. Create the D1 database
 
@@ -142,9 +160,9 @@ npx wrangler d1 create heimdall-gatekeeper
 
 Copy the generated `database_id`.
 
-### 2. Update the binding
+### 2. Confirm the D1 binding
 
-Edit [wrangler.toml](/home/rgarcez/Documentos/heimdall-gatekeeper/wrangler.toml) and confirm:
+Check [wrangler.toml](/home/rgarcez/Documentos/heimdall-gatekeeper/wrangler.toml):
 
 ```toml
 [[d1_databases]]
@@ -159,69 +177,70 @@ database_id = "YOUR-REAL-D1-ID"
 npx wrangler d1 execute heimdall-gatekeeper --remote --file=cloudflare/d1/0001_init.sql
 ```
 
-### 4. Create the Pages project
+### 4. Configure Pages
 
-In Cloudflare Pages, connect this repository and use:
+When connecting the repository in Cloudflare Pages, use:
 
 - Framework preset: `None`
 - Build command: leave empty
 - Build output directory: `frontend`
 
-### 5. Confirm D1 binding in Pages
+### 5. Confirm the binding in Pages
 
-In the Pages project settings:
+Inside the Pages project settings:
 
-- Functions
-- D1 bindings
+- `Functions`
+- `D1 bindings`
 - Binding name: `DB`
 - Database: `heimdall-gatekeeper`
 
-### 6. Deploy and validate
+### 6. Validate the online deployment
 
-After the first deploy, test:
+Test these URLs after deploy:
 
 - `/api/config`
 - `/api/overview`
 - `/api/demo/bootstrap`
 
-Then open the dashboard URL on `pages.dev`.
+Then open the public `pages.dev` URL for the full console.
 
-## Quality Gates
+## Quality and Validation
 
-Run locally:
+Recommended local checks:
 
 ```bash
-pytest
+./.venv/bin/pytest
 python3 -m compileall backend tests
 ```
 
-CI currently includes:
+The CI workflow currently runs:
 
 - `flake8`
 - `black --check`
 - `bandit`
 - `pip-audit`
 - `pytest`
-- Docker build
+- Docker build validation
+
+## Why It Matters in the Portfolio
+
+This project was built to show practical capability across:
+
+- Blue Team thinking and detection workflow
+- SecOps-style event processing
+- security product UX and operational dashboards
+- Python backend organization with testing and CI
+- deployment thinking across local, container and cloud environments
+
+It is a compact project, but it communicates architecture, security mindset, product design and delivery discipline in one place.
 
 ## Roadmap
 
 - authenticated multi-user console
-- stronger operator audit trail
-- MITRE navigator export
-- syslog/file watcher ingestion workers
-- richer CVE scoring and enrichment pipeline
-- persistent analyst preferences in remote mode
-
-## Why It Matters
-
-This project was built to demonstrate practical skills across:
-
-- Blue Team monitoring
-- SecOps event pipelines
-- DevSecOps packaging and CI/CD
-- security-oriented UX with low operational overhead
-- hybrid local/cloud deployment thinking
+- richer audit trail for analyst actions
+- expanded CVE and MITRE context
+- ingestion adapters for more event sources
+- stronger remote-state synchronization in cloud mode
 
 ## License
 
