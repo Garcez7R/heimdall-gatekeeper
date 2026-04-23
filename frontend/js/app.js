@@ -13,6 +13,8 @@ const state = {
   lastOverview: null,
 };
 
+let appRevealed = false;
+
 const ingestPresets = [
   {
     source: "auth-gateway",
@@ -126,6 +128,13 @@ function pushToast(message, tone = "error") {
   window.setTimeout(() => {
     toast.remove();
   }, 4200);
+}
+
+function revealApp() {
+  if (appRevealed) return;
+  appRevealed = true;
+  document.getElementById("splash").hidden = true;
+  document.getElementById("app").hidden = false;
 }
 
 function setView(view) {
@@ -644,6 +653,7 @@ function bindEvents() {
 }
 
 async function bootstrap() {
+  window.setTimeout(revealApp, 2200);
   readStoredPreferences();
   const config = await request("/api/config");
   document.getElementById("tagline").textContent = config.tagline;
@@ -659,15 +669,11 @@ async function bootstrap() {
   updateClock();
   window.setInterval(updateClock, 1000);
 
-  window.setTimeout(() => {
-    document.getElementById("splash").hidden = true;
-    document.getElementById("app").hidden = false;
-  }, config.splash_duration_ms || 1200);
+  window.setTimeout(revealApp, config.splash_duration_ms || 1200);
 }
 
 bootstrap().catch((error) => {
   console.error(error);
   pushToast(error.message, "error");
-  document.getElementById("splash").hidden = true;
-  document.getElementById("app").hidden = false;
+  revealApp();
 });
