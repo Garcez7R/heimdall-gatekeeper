@@ -31,6 +31,16 @@ Heimdall Gatekeeper is a practical, easy-to-run SIEM demo with a polished dashbo
 
 This is a compact project, but it behaves like a serious security-oriented product rather than a simple CRUD demo.
 
+## 📋 Implementation Roadmap
+
+See [IMPLEMENTATION_ROADMAP.md](./IMPLEMENTATION_ROADMAP.md) for the complete **3-phase deployment plan**:
+
+- **Phase 1** ✅: D1 Persistence, Strict Validation, Rate Limiting & API Keys
+- **Phase 2** ✅: Webhooks (Discord/Slack), MITRE ATT&CK Mapping, Advanced Charts  
+- **Phase 3** 🚀: Behavioral Correlation, ECS Normalization, Sigma Rules, JWT Auth
+
+This roadmap demonstrates enterprise-grade SIEM evolution from prototype to production-ready.
+
 ## Core Capabilities
 
 - FastAPI backend with modular API routes

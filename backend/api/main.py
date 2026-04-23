@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 
 from backend.api.dependencies import FRONTEND_DIR
 from backend.api.errors import register_exception_handlers
+from backend.api.middleware import limiter
 from backend.api.routes_alerts import router as alerts_router
 from backend.api.routes_config import router as config_router
 from backend.api.routes_demo import router as demo_router
@@ -16,7 +17,14 @@ from backend.core.seed import seed_demo_data_if_empty
 from backend.storage.db import initialize_database
 
 
-app = FastAPI(title="Heimdall Gatekeeper", version="1.1.0")
+app = FastAPI(
+    title="Heimdall Gatekeeper",
+    version="1.2.0",  # Updated for multi-phase roadmap
+    description="Advanced SIEM with behavioral detection and webhook integration",
+)
+
+app.state.limiter = limiter
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
