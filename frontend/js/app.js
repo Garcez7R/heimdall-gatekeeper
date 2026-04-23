@@ -234,7 +234,10 @@ function renderMetrics(overview) {
     .join("");
 
   const systemHealth = document.getElementById("system-health");
-  systemHealth.textContent = escapeHtml(overview.status.system);
+  const healthLabel = overview.status.system === "healthy"
+    ? text("healthy", "Healthy")
+    : text("degraded", "Degraded");
+  systemHealth.textContent = escapeHtml(healthLabel);
   systemHealth.className = `status-pill ${overview.status.system === "healthy" ? "healthy" : "degraded"}`;
   document.getElementById("uptime-pill").textContent = `${text("uptime", "Uptime")} ${overview.status.uptime_seconds}s`;
   document.getElementById("last-ingest-pill").textContent = `${text("lastIngest", "Last ingest")} ${formatRelativeTime(overview.last_ingest_at)}`;

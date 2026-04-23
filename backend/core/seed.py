@@ -45,10 +45,25 @@ DEMO_EVENTS = [
 ]
 
 
-def seed_demo_data_if_empty() -> None:
-    row = fetch_one("SELECT COUNT(*) AS total FROM events")
-    if row and int(row["total"]) > 0:
-        return
+def demo_event_exists(event: dict[str, object]) -> bool:
+    row = fetch_one(
+        """
+        SELECT id
+        FROM events
+        WHERE source = ? AND event_type = ? AND title = ?
+        LIMIT 1
+        """,
+        (
+            str(event.get("source", "")),
+            str(event.get("event_type", "")),
+            str(event.get("title", "")),
+        ),
+    )
+    return row is not None
 
+
+def seed_demo_data_if_empty() -> None:
     for event in DEMO_EVENTS:
+        if demo_event_exists(event):
+            continue
         ingest_event(event)
