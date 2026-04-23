@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./frontend/assets/img/logo.png" alt="Heimdall Gatekeeper logo" width="128" />
+</p>
+
 # ᚺ Heimdall Gatekeeper
 
 ![Python](https://img.shields.io/badge/Python-3.11%2B-0f172a?style=for-the-badge&logo=python&logoColor=ffd43b)
