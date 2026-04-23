@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./frontend/assets/img/logo.png" alt="Heimdall Gatekeeper logo" width="128" />
+  <img src="./logo.png" alt="Heimdall Gatekeeper logo" width="220" />
 </p>
 
 # ᚺ Heimdall Gatekeeper
