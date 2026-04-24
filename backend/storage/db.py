@@ -98,10 +98,22 @@ CREATE TABLE IF NOT EXISTS system_metrics (
   updated_at TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS webhooks (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  url TEXT NOT NULL,
+  platform TEXT NOT NULL CHECK (platform IN ('discord', 'slack', 'generic')),
+  severity_filter TEXT NOT NULL DEFAULT 'low',
+  active BOOLEAN NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_events_created_at ON events (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_events_severity ON events (severity);
 CREATE INDEX IF NOT EXISTS idx_alerts_status ON alerts (status, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_alerts_severity ON alerts (severity, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_webhooks_active ON webhooks (active);
 """
 
 

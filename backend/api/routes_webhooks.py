@@ -1,48 +1,39 @@
-"""Webhook configuration and management endpoints (PHASE 2)."""
+"""Webhook configuration and management endpoints (PHASE 2-3)."""
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, Query, Depends, status
+import uuid
+
+from fastapi import APIRouter, HTTPException, Query, status
 
 from backend.api.middleware import verify_jwt_token
 from backend.api.schemas import WebhookConfig
+from backend.storage.webhook_storage import (
+    create_webhook as create_webhook_db,
+    delete_webhook as delete_webhook_db,
+    get_active_webhooks,
+    get_webhook,
+    list_webhooks as list_webhooks_db,
+    toggle_webhook as toggle_webhook_db,
+)
 
 
 router = APIRouter(tags=["webhooks"])
 
-# In-memory webhook storage (replace with DB in production)
-_webhooks: dict[str, dict] = {}
-
-
-def get_active_webhooks(severity: str | None = None) -> list[dict]:
-    """Get active webhooks, optionally filtered by alert severity.
-    
-    Used by pipeline.py to trigger webhooks on alert creation.
-    PHASE 3: Migrate this to persistent database storage.
-    """
-    active = [wh for wh in _webhooks.values() if wh.get("active", True)]
-    if severity:
-        # Map severity to numeric level for comparison
-        severity_levels = {"low": 1, "medium": 2, "high": 3, "critical": 4}
-        alert_level = severity_levels.get(severity, 0)
-        current_level = severity_levels.get(severity, 0)
-        active = [wh for wh in active 
-                  if alert_level >= severity_levels.get(wh.get("severity_filter", "low"), 0)]
-    return active
-
 
 @router.get("/api/webhooks")
-def list_webhooks(limit: int = Query(default=10, le=100)) -> dict[str, object]:
-    """List active webhooks."""
+def list_webhooks_endpoint(limit: int = Query(default=10, le=100)) -> dict[str, object]:
+    """List all webhooks from persistent storage."""
+    webhooks = list_webhooks_db()[:limit]
     return {
-        "webhooks": list(_webhooks.values())[:limit],
-        "total": len(_webhooks),
+        "webhooks": webhooks,
+        "total": len(list_webhooks_db()),
     }
 
 
 @router.post("/api/admin/webhooks")
 def create_webhook(config: WebhookConfig, token: str | None = None) -> dict[str, object]:
-    """Create a new webhook configuration (requires admin token)."""
-    # In production, verify token is valid admin token
+    """Create a new webhook configuration in persistent storage."""
+    # Optional token verification (enforce in production)
     if token:
         try:
             payload = verify_jwt_token(token)
@@ -57,26 +48,25 @@ def create_webhook(config: WebhookConfig, token: str | None = None) -> dict[str,
                 detail=f"Invalid token: {e}",
             )
 
-    webhook_id = f"wh_{len(_webhooks) + 1:06d}"
-    _webhooks[webhook_id] = {
-        "id": webhook_id,
-        "name": config.name,
-        "url": config.url,
-        "platform": config.platform,
-        "severity_filter": config.severity_filter,
-        "active": config.active,
-        "created_at": "2026-04-23T00:00:00Z",  # Use real timestamp in production
-    }
+    webhook_id = f"wh_{uuid.uuid4().hex[:12]}"
+    webhook = create_webhook_db(
+        webhook_id=webhook_id,
+        name=config.name,
+        url=config.url,
+        platform=config.platform,
+        severity_filter=config.severity_filter,
+        active=config.active,
+    )
     return {
         "id": webhook_id,
         "created": True,
-        "webhook": _webhooks[webhook_id],
+        "webhook": webhook,
     }
 
 
 @router.delete("/api/admin/webhooks/{webhook_id}")
 def delete_webhook(webhook_id: str, token: str | None = None) -> dict[str, str]:
-    """Delete a webhook configuration (requires admin token)."""
+    """Delete a webhook configuration from persistent storage."""
     if token:
         try:
             payload = verify_jwt_token(token)
@@ -91,18 +81,24 @@ def delete_webhook(webhook_id: str, token: str | None = None) -> dict[str, str]:
                 detail=f"Invalid token: {e}",
             )
 
-    if webhook_id not in _webhooks:
+    if not get_webhook(webhook_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Webhook not found",
         )
 
-    del _webhooks[webhook_id]
+    success = delete_webhook_db(webhook_id)
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to delete webhook",
+        )
+
     return {"status": "deleted", "webhook_id": webhook_id}
 
 
 @router.patch("/api/admin/webhooks/{webhook_id}")
-def toggle_webhook(webhook_id: str, active: bool, token: str | None = None) -> dict[str, object]:
+def toggle_webhook_endpoint(webhook_id: str, active: bool, token: str | None = None) -> dict[str, object]:
     """Enable or disable a webhook (requires admin token)."""
     if token:
         try:
@@ -118,20 +114,22 @@ def toggle_webhook(webhook_id: str, active: bool, token: str | None = None) -> d
                 detail=f"Invalid token: {e}",
             )
 
-    if webhook_id not in _webhooks:
+    webhook = get_webhook(webhook_id)
+    if not webhook:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Webhook not found",
         )
 
-    _webhooks[webhook_id]["active"] = active
-    return {"id": webhook_id, "active": active}
+    updated = toggle_webhook_db(webhook_id, active)
+    return {"id": webhook_id, "active": updated.get("active") if updated else active}
 
 
 @router.post("/api/webhooks/test/{webhook_id}")
 def test_webhook(webhook_id: str) -> dict[str, str]:
     """Send a test alert to a webhook to verify connectivity."""
-    if webhook_id not in _webhooks:
+    webhook = get_webhook(webhook_id)
+    if not webhook:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Webhook not found",
@@ -139,7 +137,6 @@ def test_webhook(webhook_id: str) -> dict[str, str]:
 
     from backend.core.webhooks import format_alert_for_webhook, send_webhook
 
-    webhook = _webhooks[webhook_id]
     test_alert = {
         "id": "test_alert",
         "title": "Test Alert from Heimdall",

@@ -182,10 +182,10 @@ def ingest_event(payload: dict[str, Any]) -> dict[str, Any]:
     event_id = persist_event(event)
     alert_ids = evaluate_event(event_id, event)
     
-    # PHASE 2: Trigger webhooks on alert creation
+    # PHASE 2-3: Trigger webhooks on alert creation
     if alert_ids:
         try:
-            from backend.api.routes_webhooks import get_active_webhooks
+            from backend.storage.webhook_storage import get_active_webhooks
             
             webhooks = get_active_webhooks(severity=event.severity)
             for alert_id in alert_ids:

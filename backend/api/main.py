@@ -9,6 +9,7 @@ from backend.api.errors import register_exception_handlers
 from backend.api.middleware import limiter
 from backend.api.routes_advanced_detections import router as advanced_detections_router
 from backend.api.routes_alerts import router as alerts_router
+from backend.api.routes_auth import router as auth_router
 from backend.api.routes_config import router as config_router
 from backend.api.routes_demo import router as demo_router
 from backend.api.routes_events import router as events_router
@@ -43,6 +44,7 @@ app.include_router(events_router)
 app.include_router(alerts_router)
 app.include_router(demo_router)
 app.include_router(system_router)
+app.include_router(auth_router)
 app.include_router(webhooks_router)
 app.include_router(advanced_detections_router)
 
