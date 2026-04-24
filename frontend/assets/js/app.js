@@ -601,6 +601,7 @@ async function loadAlerts() {
           <td>${escapeHtml(row.rule_name)}</td>
           <td>${escapeHtml(row.message)}</td>
           <td>${escapeHtml(row.status)}</td>
+          <td>${row.mitre_tag ? `<code style="color: #4ade80;">${escapeHtml(row.mitre_tag)}</code>` : '<span style="color: #888;">—</span>'}</td>
           <td>${escapeHtml(formatDateTime(row.created_at))}</td>
           <td>
             <button class="table-action" type="button" data-action="ack" data-id="${row.id}">${escapeHtml(text("acknowledge", "Ack"))}</button>
@@ -632,6 +633,7 @@ async function loadEvents() {
           <td>${escapeHtml(row.source)}</td>
           <td>${escapeHtml(row.title)}</td>
           <td>${severityBadge(row.severity)}</td>
+          <td><code style="color: #888;">N/A</code></td>
           <td>${escapeHtml(formatDateTime(row.created_at))}</td>
         </tr>
       `

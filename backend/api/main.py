@@ -7,12 +7,14 @@ from fastapi.staticfiles import StaticFiles
 from backend.api.dependencies import FRONTEND_DIR
 from backend.api.errors import register_exception_handlers
 from backend.api.middleware import limiter
+from backend.api.routes_advanced_detections import router as advanced_detections_router
 from backend.api.routes_alerts import router as alerts_router
 from backend.api.routes_config import router as config_router
 from backend.api.routes_demo import router as demo_router
 from backend.api.routes_events import router as events_router
 from backend.api.routes_overview import router as overview_router
 from backend.api.routes_system import router as system_router
+from backend.api.routes_webhooks import router as webhooks_router
 from backend.core.seed import seed_demo_data_if_empty
 from backend.storage.db import initialize_database
 
@@ -41,6 +43,8 @@ app.include_router(events_router)
 app.include_router(alerts_router)
 app.include_router(demo_router)
 app.include_router(system_router)
+app.include_router(webhooks_router)
+app.include_router(advanced_detections_router)
 
 
 @app.on_event("startup")

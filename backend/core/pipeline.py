@@ -9,6 +9,7 @@ from typing import Any
 from backend.core.metrics import save_metric
 from backend.core.models import AlertPayload, EventPayload
 from backend.core.rules_engine import load_rules
+from backend.core.webhooks import format_alert_for_webhook, send_webhook
 from backend.storage.db import execute, execute_with_rowcount, fetch_all, fetch_one
 from backend.threat_intel.nvd import fetch_cve_details
 
@@ -180,6 +181,34 @@ def ingest_event(payload: dict[str, Any]) -> dict[str, Any]:
     event = normalize_event(safe_payload)
     event_id = persist_event(event)
     alert_ids = evaluate_event(event_id, event)
+    
+    # PHASE 2: Trigger webhooks on alert creation
+    if alert_ids:
+        try:
+            from backend.api.routes_webhooks import get_active_webhooks
+            
+            webhooks = get_active_webhooks(severity=event.severity)
+            for alert_id in alert_ids:
+                alert = fetch_one(
+                    "SELECT * FROM alerts WHERE id = ?", (alert_id,)
+                )
+                if alert:
+                    alert_dict = dict(alert)
+                    for webhook in webhooks:
+                        payload_formatted = format_alert_for_webhook(
+                            alert_dict,
+                            platform=webhook.get("platform", "generic")
+                        )
+                        # Send asynchronously (fire-and-forget) to not block ingestion
+                        send_webhook(
+                            webhook["url"],
+                            payload_formatted,
+                            platform=webhook.get("platform", "generic")
+                        )
+        except Exception as e:
+            # Log webhook error but don't fail the entire ingestion
+            print(f"Webhook trigger error: {e}")
+    
     events_per_minute = fetch_one(
         "SELECT COUNT(*) AS total FROM events WHERE created_at >= datetime('now', '-1 minute')"
     ) or {"total": 0}
