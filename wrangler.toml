@@ -1,6 +1,7 @@
 name = "heimdall-gatekeeper"
 compatibility_date = "2026-04-22"
 pages_build_output_dir = "frontend"
+functions = "./functions"
 
 [[d1_databases]]
 binding = "DB"

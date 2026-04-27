@@ -39,15 +39,10 @@ wrangler d1 create $D1_DATABASE_NAME --yes || echo "Database may already exist"
 echo -e "${YELLOW}Step 3: Running database migrations...${NC}"
 wrangler d1 execute $D1_DATABASE_NAME --remote --file=cloudflare/d1/0001_init.sql
 
-echo -e "${YELLOW}Step 4: Deploying Cloudflare Functions...${NC}"
-wrangler deploy
+echo -e "${YELLOW}Step 4: Deploying Cloudflare Pages + Functions...${NC}"
+wrangler pages deploy frontend --project-name=$PROJECT_NAME-frontend --yes
 
-echo -e "${YELLOW}Step 5: Deploying Cloudflare Pages...${NC}"
-cd frontend
-wrangler pages deploy . --project-name=$PROJECT_NAME-frontend --yes
-cd ..
-
-echo -e "${YELLOW}Step 6: Running production tests...${NC}"
+echo -e "${YELLOW}Step 5: Running production tests...${NC}"
 bash cloudflare/test-production.sh
 
 echo -e "${GREEN}✅ Deployment completed successfully!${NC}"

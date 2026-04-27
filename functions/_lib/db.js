@@ -244,3 +244,48 @@ export async function updateAlertStatus(env, alertId, status, actor) {
     .bind(status, actor, nowIso(), alertId)
     .run();
 }
+
+export async function listWebhooks(env, { limit = 50 } = {}) {
+  return env.DB.prepare("SELECT * FROM webhooks ORDER BY created_at DESC LIMIT ?")
+    .bind(limit)
+    .all();
+}
+
+export async function listAuditEvents(env, { limit = 10 } = {}) {
+  return env.DB.prepare("SELECT * FROM audit_trail ORDER BY timestamp DESC LIMIT ?")
+    .bind(limit)
+    .all();
+}
+
+export async function listDashboards(env, { limit = 20 } = {}) {
+  return env.DB.prepare("SELECT * FROM user_dashboards ORDER BY updated_at DESC LIMIT ?")
+    .bind(limit)
+    .all();
+}
+
+export async function createWebhook(env, webhook) {
+  const createdAt = nowIso();
+  const inserted = await env.DB.prepare(
+    `INSERT INTO webhooks
+      (webhook_id, name, url, platform, severity_filter, active, headers, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  )
+    .bind(
+      webhook.webhook_id,
+      webhook.name,
+      webhook.url,
+      webhook.platform || "generic",
+      webhook.severity_filter || null,
+      webhook.active ? 1 : 0,
+      JSON.stringify(webhook.headers || {}),
+      createdAt,
+      createdAt,
+    )
+    .run();
+  return {
+    id: Number(inserted.meta.last_row_id),
+    ...webhook,
+    created_at: createdAt,
+    updated_at: createdAt,
+  };
+}

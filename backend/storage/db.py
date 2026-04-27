@@ -23,6 +23,7 @@ def get_connection() -> Iterator[sqlite3.Connection]:
     connection = sqlite3.connect(get_database_path(), timeout=30, check_same_thread=False)
     connection.row_factory = sqlite3.Row
     connection.execute("PRAGMA foreign_keys = ON")
+    connection.executescript(SCHEMA)
     try:
         yield connection
         connection.commit()

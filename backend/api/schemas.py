@@ -41,7 +41,7 @@ class BehavioralDetectionRule(BaseModel):
     """PHASE 3: Multi-stage behavioral detection rule."""
     name: str = Field(..., min_length=1)
     description: str = Field(..., min_length=1)
-    stages: int = Field(..., ge=2, le=5, description="Number of correlation stages")
+    stages: list[str] = Field(..., min_length=2, max_length=5, description="Sequence of detection stages")
     time_window_minutes: int = Field(..., ge=1, le=1440)
     group_by: str = Field(default="user", description="Field to correlate on (user, ip, source)")
-    conditions: list[dict] = Field(..., description="Stage conditions")
+    conditions: list[dict] = Field(default_factory=list, description="Optional stage conditions")

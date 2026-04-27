@@ -5,6 +5,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from backend.api.main import app
+from backend.storage.db import execute
 from backend.storage.webhook_storage import (
     create_webhook,
     delete_webhook,
@@ -17,12 +18,12 @@ from backend.storage.webhook_storage import (
 client = TestClient(app)
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def db_setup():
-    """Setup test database (assumes fresh DB for each test)."""
-    # Clear webhooks by deleting all (would need DB cleanup in real tests)
+    """Setup test database and clear webhook state between tests."""
+    execute("DELETE FROM webhooks")
     yield
-    # Cleanup can go here if needed
+    execute("DELETE FROM webhooks")
 
 
 def test_create_webhook_in_storage():

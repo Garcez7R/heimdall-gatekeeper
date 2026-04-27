@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
-from backend.storage.db import execute, fetch_all, fetch_one
+from backend.storage.db import execute, execute_with_rowcount, fetch_all, fetch_one
 
 
 def utc_now_iso() -> str:
@@ -83,5 +83,5 @@ def toggle_webhook(webhook_id: str, active: bool) -> dict[str, Any] | None:
 
 def delete_webhook(webhook_id: str) -> bool:
     """Delete a webhook."""
-    result = execute("DELETE FROM webhooks WHERE id = ?", (webhook_id,))
+    result = execute_with_rowcount("DELETE FROM webhooks WHERE id = ?", (webhook_id,))
     return result > 0

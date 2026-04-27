@@ -48,10 +48,10 @@ app.include_router(overview_router)
 app.include_router(events_router)
 app.include_router(alerts_router)
 app.include_router(demo_router)
-app.include_router(system_router)
 app.include_router(auth_router)
 app.include_router(webhooks_router)
 app.include_router(advanced_detections_router)
+app.include_router(system_router)
 
 
 @app.on_event("startup")
