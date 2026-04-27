@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" role="img" aria-labelledby="title desc">
+  <title>Heimdall Gatekeeper</title>
+  <desc>Runic security shield icon with digital circuitry</desc>
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0ea5e9"/>
+    </linearGradient>
+  </defs>
+  <rect width="500" height="500" rx="80" fill="#0f172a"/>
+  <path d="M250 90 L130 170 L130 335 L250 410 L370 335 L370 170 Z" fill="none" stroke="url(#grad)" stroke-width="24" stroke-linejoin="round"/>
+  <path d="M250 110 V390" stroke="#38bdf8" stroke-width="24" stroke-linecap="round"/>
+  <path d="M250 110 L200 190" stroke="#7dd3fc" stroke-width="16" stroke-linecap="round"/>
+  <path d="M250 110 L300 190" stroke="#7dd3fc" stroke-width="16" stroke-linecap="round"/>
+  <path d="M250 390 L200 310" stroke="#7dd3fc" stroke-width="16" stroke-linecap="round"/>
+  <path d="M250 390 L300 310" stroke="#7dd3fc" stroke-width="16" stroke-linecap="round"/>
+  <circle cx="250" cy="250" r="36" fill="#0f172a" stroke="#38bdf8" stroke-width="12"/>
+  <path d="M210 250 L290 250" stroke="#7dd3fc" stroke-width="10" stroke-linecap="round"/>
+  <path d="M250 210 L250 290" stroke="#7dd3fc" stroke-width="10" stroke-linecap="round"/>
+  <path d="M170 170 L145 145" stroke="#38bdf8" stroke-width="8" stroke-linecap="round"/>
+  <path d="M330 170 L355 145" stroke="#38bdf8" stroke-width="8" stroke-linecap="round"/>
+  <path d="M170 330 L145 355" stroke="#38bdf8" stroke-width="8" stroke-linecap="round"/>
+  <path d="M330 330 L355 355" stroke="#38bdf8" stroke-width="8" stroke-linecap="round"/>
+</svg>

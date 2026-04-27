@@ -16,7 +16,10 @@ limiter = Limiter(
     storage_uri=None,  # In-memory for demo; use Redis for production
 )
 
-JWT_SECRET = os.getenv("JWT_SECRET", "heimdall-demo-key-change-in-production")
+JWT_SECRET = os.getenv(
+    "HEIMDALL_JWT_SECRET",
+    os.getenv("JWT_SECRET", "heimdall-demo-key-change-in-production"),
+)
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRY_HOURS = 24
 
@@ -57,7 +60,6 @@ async def verify_api_key(request: Request) -> str:
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Missing X-Heimdall-Key header",
         )
-    # In production, validate against a database of authorized keys
     if api_key != os.getenv("HEIMDALL_API_KEY", "demo-key"):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
