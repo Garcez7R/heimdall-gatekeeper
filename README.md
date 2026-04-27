@@ -260,18 +260,328 @@ ws.onmessage = (event) => {
 };
 ```
 
-## 🧪 Testing
+## 🧪 Estratégia de Teste Real e Validação de Produção
 
+### Visão Geral dos Testes
+
+Esta seção detalha uma estratégia abrangente de testes para validar o Heimdall Gatekeeper em ambiente de produção, garantindo alta disponibilidade, performance e segurança.
+
+### 1. **Testes de Funcionalidade (Unitários + Integração)**
+
+#### Configuração do Ambiente de Teste
 ```bash
-# Run all tests
-pytest tests/ -v
+# Ambiente isolado com Docker
+docker run -d --name heimdall-test \
+  -p 8000:8000 \
+  -e JWT_SECRET=test-secret-key \
+  -e REDIS_HOST=redis-test \
+  -v $(pwd)/tests:/app/tests \
+  heimdall-gatekeeper
 
-# Run with coverage
-pytest tests/ --cov=backend --cov-report=html
-
-# Run specific test
-pytest tests/test_webhooks.py::test_login_endpoint -v
+# Redis para testes
+docker run -d --name redis-test -p 6379:6379 redis:alpine
 ```
+
+#### Casos de Teste Críticos
+```python
+# tests/test_production_readiness.py
+def test_full_security_pipeline():
+    """Testa pipeline completo: ingestão → detecção → alerta → webhook"""
+    # 1. Ingestão de evento
+    event = create_test_event(ip="192.168.1.100", severity="high")
+    response = client.post("/api/events/ingest", json=event)
+    assert response.status_code == 200
+
+    # 2. Verificação de detecção
+    alerts = get_active_alerts()
+    assert len(alerts) > 0
+    assert alerts[0]["severity"] == "high"
+
+    # 3. Verificação de webhook delivery
+    webhook_calls = get_webhook_delivery_log()
+    assert len(webhook_calls) > 0
+    assert webhook_calls[0]["status"] == "delivered"
+
+    # 4. Verificação de audit trail
+    audit_events = get_audit_events(event_type="alert_generated")
+    assert len(audit_events) > 0
+```
+
+### 2. **Testes de Performance e Carga**
+
+#### Benchmarking de Ingestão
+```bash
+# Teste de carga com 1000 eventos/segundo
+ab -n 10000 -c 100 \
+  -H "Authorization: Bearer $JWT_TOKEN" \
+  -T "application/json" \
+  -p test_event.json \
+  http://localhost:8000/api/events/ingest
+
+# Resultado esperado: < 500ms response time, 0% errors
+```
+
+#### Teste de Memória e CPU
+```bash
+# Monitoramento durante carga
+docker stats heimdall-test
+
+# Memory leak test (1 hora)
+while true; do
+  curl -X POST http://localhost:8000/api/events/ingest \
+    -H "Content-Type: application/json" \
+    -d @test_event.json
+  sleep 1
+done
+
+# CPU profiling
+python -m cProfile -s cumtime backend/api/main.py
+```
+
+### 3. **Testes de Segurança e Compliance**
+
+#### Penetration Testing
+```bash
+# SQL Injection attempts
+sqlmap -u "http://localhost:8000/api/events?filter=*" --batch
+
+# XSS attempts
+curl -X POST http://localhost:8000/api/events/ingest \
+  -H "Content-Type: application/json" \
+  -d '{"message": "<script>alert(1)</script>"}'
+
+# Rate limiting test
+for i in {1..700}; do
+  curl http://localhost:8000/api/system/health
+done
+# Should return 429 after 600 requests
+```
+
+#### Compliance Validation
+```python
+def test_sox_compliance():
+    """Valida compliance SOX/HIPAA"""
+    # Test audit trail completeness
+    audit_events = get_audit_trail(last_24h=True)
+    required_events = ["user_login", "config_change", "data_access"]
+
+    for event_type in required_events:
+        assert event_type in [e["event_type"] for e in audit_events]
+
+    # Test data retention
+    old_audit_events = get_audit_trail(days_ago=400)
+    assert len(old_audit_events) == 0  # Should be cleaned up
+
+    # Test encryption at rest
+    sensitive_data = get_encrypted_data()
+    assert is_properly_encrypted(sensitive_data)
+```
+
+### 4. **Testes de Alta Disponibilidade**
+
+#### Failover Testing
+```bash
+# Redis failover
+docker stop redis-test
+# System should continue with degraded performance
+curl http://localhost:8000/api/system/health
+# Should return 200 with redis_status: "degraded"
+
+# Database failover (Cloudflare D1)
+# Simulate network partition
+iptables -A OUTPUT -d d1-api.cloudflare.com -j DROP
+# System should queue events and retry
+```
+
+#### Chaos Engineering
+```python
+# tests/test_chaos.py
+def test_chaos_webhook_failure():
+    """Testa falha de webhooks externos"""
+    # Configure webhook para URL inexistente
+    configure_webhook("discord", "http://nonexistent.url")
+
+    # Envie alerta
+    create_alert(severity="critical")
+
+    # Verifique retry logic
+    delivery_attempts = get_webhook_attempts()
+    assert len(delivery_attempts) >= 3  # Max retries
+    assert delivery_attempts[-1]["status"] == "failed"
+```
+
+### 5. **Testes de Integração com SIEMs**
+
+#### Splunk Integration Test
+```bash
+# Configurar HEC (HTTP Event Collector)
+curl -X POST https://splunk-server:8088/services/collector \
+  -H "Authorization: Splunk $HEC_TOKEN" \
+  -d '{"event": "test_event", "source": "heimdall"}'
+
+# Verificar no Splunk
+# Search: source="heimdall" | stats count
+```
+
+#### ELK Stack Integration
+```bash
+# Enviar para Elasticsearch
+curl -X POST "elasticsearch:9200/heimdall-events/_doc" \
+  -H "Content-Type: application/json" \
+  -d @test_event.json
+
+# Verificar indexação
+curl "elasticsearch:9200/_cat/indices/heimdall-*"
+```
+
+### 6. **Testes de Threat Intelligence**
+
+#### Feed Validation
+```python
+def test_threat_intel_accuracy():
+    """Valida precisão dos feeds de threat intel"""
+    known_malicious_ip = "8.8.8.8"  # Google DNS (safe)
+
+    # Enrich IP
+    enrichment = threat_intel.enrich_ip(known_malicious_ip)
+
+    # Should not be flagged as malicious
+    assert enrichment["malicious_score"] < 50
+
+    # Test cache
+    cached = redis_cache.get_threat_intel(f"otx_ip_{known_malicious_ip}")
+    assert cached is not None
+```
+
+### 7. **Testes de UI/UX**
+
+#### E2E Testing com Playwright
+```python
+# tests/test_e2e.py
+def test_dashboard_workflow():
+    """Testa workflow completo do dashboard"""
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page()
+
+        # Login
+        page.goto("http://localhost:8000")
+        page.fill("#username", "admin")
+        page.fill("#password", "admin123")
+        page.click("#login-btn")
+
+        # Verify dashboard loads
+        assert page.locator(".dashboard-container").is_visible()
+
+        # Create custom dashboard
+        page.click("#create-dashboard")
+        page.fill("#dashboard-name", "Test Dashboard")
+        page.click("#save-dashboard")
+
+        # Add widget
+        page.click("#add-widget")
+        page.select_option("#widget-type", "alert_summary")
+        page.click("#add-widget-confirm")
+
+        # Verify widget appears
+        assert page.locator(".widget-alert-summary").is_visible()
+
+        browser.close()
+```
+
+### 8. **Testes de Backup e Recovery**
+
+#### Backup Validation
+```bash
+# Criar backup
+sqlite3 data/heimdall.db ".backup backup.db"
+
+# Verificar integridade
+sqlite3 backup.db "PRAGMA integrity_check;"
+
+# Testar restore
+cp backup.db data/heimdall_restored.db
+# Verificar se dados estão intactos
+```
+
+### 9. **Monitoramento de Testes**
+
+#### Métricas de Teste
+```python
+# tests/test_monitoring.py
+def test_prometheus_metrics():
+    """Valida exposição de métricas Prometheus"""
+    response = requests.get("http://localhost:9090/metrics")
+    metrics = response.text
+
+    # Verificar métricas críticas
+    assert "heimdall_events_processed_total" in metrics
+    assert "heimdall_alerts_generated_total" in metrics
+    assert "heimdall_api_requests_total" in metrics
+
+    # Verificar valores não-zero
+    lines = metrics.split('\n')
+    for line in lines:
+        if line.startswith('heimdall_events_processed_total'):
+            value = float(line.split(' ')[1])
+            assert value > 0
+```
+
+### 10. **Plano de Rollback**
+
+#### Estratégia de Rollback
+```bash
+# Rollback script
+#!/bin/bash
+echo "Iniciando rollback..."
+
+# Parar aplicação
+docker stop heimdall-prod
+
+# Restaurar backup
+cp backup_pre_deploy.db data/heimdall.db
+
+# Reverter código
+git checkout HEAD~1
+
+# Reiniciar
+docker start heimdall-prod
+
+echo "Rollback concluído"
+```
+
+### Checklist de Produção
+
+#### Pré-Deploy
+- [ ] Todos os testes passando (pytest + coverage > 90%)
+- [ ] Security scan limpo (bandit, safety)
+- [ ] Performance benchmarks atingidos
+- [ ] Documentação atualizada
+- [ ] Backup do banco criado
+
+#### Durante Deploy
+- [ ] Blue-green deployment
+- [ ] Health checks passando
+- [ ] Métricas monitoradas
+- [ ] Rollback plan ready
+
+#### Pós-Deploy
+- [ ] Funcionalidades críticas testadas
+- [ ] Alertas de monitoramento configurados
+- [ ] Equipe notificada
+- [ ] Métricas baseline estabelecidas
+
+### Métricas de Sucesso
+
+| Métrica | Target | Critical |
+|---------|--------|----------|
+| Uptime | 99.9% | > 99.5% |
+| Response Time (P95) | < 500ms | < 2s |
+| Error Rate | < 0.1% | < 1% |
+| Data Loss | 0% | < 0.01% |
+| Security Incidents | 0 | < 1/month |
+
+Esta estratégia garante que o Heimdall Gatekeeper esteja pronto para produção com alta confiança e minimizando riscos de incidentes em produção.
 
 ## 📊 Monitoring & Observability
 

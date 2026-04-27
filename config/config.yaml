@@ -9,6 +9,30 @@ threat_intel:
   enabled: true
   provider: nvd
   refresh_minutes: 60
+  # API Keys for external threat intel
+  otx_api_key: null  # AlienVault OTX API key
+  misp_url: null     # MISP instance URL
+  misp_api_key: null # MISP API key
+
+redis:
+  host: localhost
+  port: 6379
+  db: 0
+  password: null
+
+prometheus:
+  enabled: true
+  port: 9090
+
+audit:
+  enabled: true
+  retention_days: 365
+
+security:
+  jwt_secret: change-me-in-production
+  jwt_expiry_hours: 24
+  rate_limit_requests: 600
+  rate_limit_window: 3600
 
 ui:
   default_language: pt-BR

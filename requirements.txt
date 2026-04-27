@@ -6,3 +6,8 @@ python-multipart==0.0.20
 python-dotenv==1.1.1
 slowapi==0.1.9
 PyJWT>=2.8.0,<3.0.0
+redis==7.4.0
+prometheus-client==0.25.0
+aio-pika==9.6.2
+cryptography==47.0.0
+playwright==1.49.1
