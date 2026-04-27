@@ -1,0 +1,57 @@
+services:
+  alertmanager:
+    container_name: heimdall-alertmanager
+    image: prom/alertmanager:latest
+    ports:
+    - 9093:9093
+    restart: unless-stopped
+    volumes:
+    - ./monitoring/alertmanager.yml:/etc/alertmanager/config.yml
+  grafana:
+    container_name: heimdall-grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: 'false'
+    image: grafana/grafana:latest
+    ports:
+    - 3000:3000
+    restart: unless-stopped
+    volumes:
+    - grafana_data:/var/lib/grafana
+    - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+  node-exporter:
+    command:
+    - --path.procfs=/host/proc
+    - --path.rootfs=/rootfs
+    - --path.sysfs=/host/sys
+    - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)
+    container_name: heimdall-node-exporter
+    image: prom/node-exporter:latest
+    ports:
+    - 9100:9100
+    restart: unless-stopped
+    volumes:
+    - /proc:/host/proc:ro
+    - /sys:/host/sys:ro
+    - /:/rootfs:ro
+  prometheus:
+    command:
+    - --config.file=/etc/prometheus/prometheus.yml
+    - --storage.tsdb.path=/prometheus
+    - --web.console.libraries=/etc/prometheus/console_libraries
+    - --web.console.templates=/etc/prometheus/consoles
+    - --storage.tsdb.retention.time=200h
+    - --web.enable-lifecycle
+    container_name: heimdall-prometheus
+    image: prom/prometheus:latest
+    ports:
+    - 9090:9090
+    restart: unless-stopped
+    volumes:
+    - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    - ./monitoring/alert_rules.yml:/etc/prometheus/alert_rules.yml
+    - prometheus_data:/prometheus
+version: '3.8'
+volumes:
+  grafana_data: {}
+  prometheus_data: {}

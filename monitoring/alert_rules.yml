@@ -1,0 +1,54 @@
+groups:
+- name: heimdall_alerts
+  rules:
+  - alert: HeimdallDown
+    annotations:
+      description: Heimdall Gatekeeper has been down for more than 5 minutes.
+      summary: Heimdall Gatekeeper is down
+    expr: up{job="heimdall-gatekeeper"} == 0
+    for: 5m
+    labels:
+      severity: critical
+  - alert: HighEventProcessingLatency
+    annotations:
+      description: Event processing latency is above 2 seconds (95th percentile).
+      summary: High event processing latency
+    expr: histogram_quantile(0.95, rate(heimdall_events_processing_duration_seconds_bucket[5m]))
+      > 2
+    for: 5m
+    labels:
+      severity: warning
+  - alert: HighAPIErrorRate
+    annotations:
+      description: API error rate is above 5%.
+      summary: High API error rate
+    expr: rate(heimdall_api_requests_total{status=~"4..|5.."}[5m]) / rate(heimdall_api_requests_total[5m])
+      * 100 > 5
+    for: 5m
+    labels:
+      severity: warning
+  - alert: QueueSizeHigh
+    annotations:
+      description: Event processing queue has more than 1000 items.
+      summary: Event queue size is high
+    expr: heimdall_queue_size > 1000
+    for: 2m
+    labels:
+      severity: warning
+  - alert: LowCacheHitRate
+    annotations:
+      description: Cache hit rate is below 80%.
+      summary: Low cache hit rate
+    expr: (sum(rate(heimdall_cache_hits_total[5m])) / (sum(rate(heimdall_cache_hits_total[5m]))
+      + sum(rate(heimdall_cache_misses_total[5m])))) * 100 < 80
+    for: 10m
+    labels:
+      severity: info
+  - alert: ThreatIntelFailures
+    annotations:
+      description: Threat intelligence API has more than 5 failures per minute.
+      summary: Threat intelligence API failures
+    expr: rate(heimdall_threat_intel_requests_total{status="error"}[5m]) > 5
+    for: 5m
+    labels:
+      severity: warning

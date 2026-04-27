@@ -1,0 +1,9 @@
+- access: proxy
+  isDefault: true
+  jsonData:
+    httpMethod: POST
+    queryTimeout: 60s
+    timeInterval: 30s
+  name: Heimdall-Prometheus
+  type: prometheus
+  url: http://prometheus:9090

@@ -1,4 +1,5 @@
 const STORAGE_KEY = "heimdall-console-preferences";
+const AUTH_TOKEN_KEY = "heimdall-auth-token";
 const REFRESH_INTERVAL_MS = 15000;
 
 const state = {
@@ -692,22 +693,34 @@ async function loadStatus() {
 }
 
 async function loadLanguage(language) {
-  state.language = language;
-  state.dictionary = await request(`/assets/i18n/${language}.json`);
-  applyTranslations();
-  applyUiPreferences();
-  if (state.lastOverview) {
-    renderMetrics(state.lastOverview);
-    renderRuleHits(state.lastOverview.status.rule_hits || []);
-    renderLatestAlerts(state.lastOverview.latest_alerts || []);
-    renderLatestEvents(state.lastOverview.latest_events || []);
-    renderTopIps(state.lastOverview.top_ips || []);
-    renderTimeline(state.lastOverview.timeline || []);
-    renderTopCves(state.lastOverview.top_cves || []);
-    renderStatusSummary(state.lastOverview);
-    updateConsoleHeader(state.lastOverview);
+  try {
+    state.language = language;
+    console.log(`Loading language: ${language}`);
+    state.dictionary = await request(`/assets/i18n/${language}.json`);
+    console.log(`Language loaded successfully:`, Object.keys(state.dictionary).length, 'keys');
+    applyTranslations();
+    applyUiPreferences();
+    persistPreferences(); // Save language preference
+    if (state.lastOverview) {
+      renderMetrics(state.lastOverview);
+      renderRuleHits(state.lastOverview.status.rule_hits || []);
+      renderLatestAlerts(state.lastOverview.latest_alerts || []);
+      renderLatestEvents(state.lastOverview.latest_events || []);
+      renderTopIps(state.lastOverview.top_ips || []);
+      renderTimeline(state.lastOverview.timeline || []);
+      renderTopCves(state.lastOverview.top_cves || []);
+      renderStatusSummary(state.lastOverview);
+      updateConsoleHeader(state.lastOverview);
+    }
+    updateClock();
+  } catch (error) {
+    console.error(`Failed to load language ${language}:`, error);
+    // Fallback to English if language fails to load
+    if (language !== 'en') {
+      console.log('Falling back to English');
+      await loadLanguage('en');
+    }
   }
-  updateClock();
 }
 
 function installAutoRefresh() {
