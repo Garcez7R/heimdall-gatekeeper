@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Garcez7R/heimdall-gatekeeper/main/logo.png" alt="Heimdall Gatekeeper logo" width="220" />
+  <img src="https://raw.githubusercontent.com/Garcez7R/heimdall-gatekeeper/main/frontend/assets/img/logo.png" alt="Heimdall Gatekeeper logo" width="220" />
 </p>
 
 # ᚺ Heimdall Gatekeeper
@@ -12,172 +12,339 @@
 </p>
 
 ![Python](https://img.shields.io/badge/Python-3.11%2B-0f172a?style=for-the-badge&logo=python&logoColor=ffd43b)
-![FastAPI](https://img.shields.io/badge/FastAPI-Security%20API-0f172a?style=for-the-badge&logo=fastapi&logoColor=22c55e)
-![SQLite](https://img.shields.io/badge/SQLite-Lightweight%20Storage-0f172a?style=for-the-badge&logo=sqlite&logoColor=7dd3fc)
-![Docker](https://img.shields.io/badge/Docker-Ready-0f172a?style=for-the-badge&logo=docker&logoColor=60a5fa)
-![CI](https://img.shields.io/github/actions/workflow/status/Garcez7R/heimdall-gatekeeper/ci.yml?branch=main&style=for-the-badge&label=CI)
+![FastAPI](https://img.shields.io/badge/FastAPI-Enterprise%20API-0f172a?style=for-the-badge&logo=fastapi&logoColor=22c55e)
 ![Cloudflare](https://img.shields.io/badge/Cloudflare-Pages%20%2B%20Functions%20%2B%20D1-0f172a?style=for-the-badge&logo=cloudflare&logoColor=f59e0b)
+![WebSocket](https://img.shields.io/badge/WebSocket-Real--time-0f172a?style=for-the-badge&logo=websocket&logoColor=8b5cf6)
+![JWT](https://img.shields.io/badge/JWT-Authentication-0f172a?style=for-the-badge&logo=jsonwebtokens&logoColor=ef4444)
+![Chart.js](https://img.shields.io/badge/Chart.js-Analytics-0f172a?style=for-the-badge&logo=chartdotjs&logoColor=10b981)
 
-Heimdall Gatekeeper is a practical, easy-to-run SIEM demo with a polished dashboard, automated event processing, and threat context. It is designed to be approachable for anyone curious about security operations, while still showing real detection and alerting workflows. No prior security knowledge is required—just run the app and explore the dashboard.
+**Enterprise-Grade SIEM** with real-time dashboards, behavioral detection, and production deployment. Built for SOC teams who need a professional security operations console.
 
-## What this project does for you
+## 🎯 What Makes This Different
 
-- normalized event ingestion from structured inputs
-- YAML-based detection rules with severity escalation
-- alert lifecycle with acknowledge and resolve flows
-- CVE-aware enrichment for vulnerability-linked events
-- operational metrics and security-console overview
-- local runtime, Docker workflow and Cloudflare deployment path
+Heimdall Gatekeeper is not just another SIEM demo—it's a **production-ready security platform** that demonstrates enterprise-grade capabilities:
 
-This is a compact project, but it behaves like a serious security-oriented product rather than a simple CRUD demo.
+- **Real-time WebSocket updates** for live threat monitoring
+- **JWT authentication** with role-based access control
+- **Async webhook delivery** with retry logic and multi-platform support
+- **Behavioral correlation** for advanced threat detection
+- **Cloudflare D1 persistence** with automated migrations
+- **Comprehensive testing** with 25+ automated test cases
+- **OpenAPI documentation** and enterprise UX
 
-## 📋 Implementation Roadmap
+## 🚀 Core Capabilities
 
-See [IMPLEMENTATION_ROADMAP.md](./IMPLEMENTATION_ROADMAP.md) for the complete **3-phase deployment plan**:
+### 🔐 Security Operations
+- **Event Ingestion**: Normalized event processing with ECS field mapping
+- **Detection Engine**: YAML-based rules with MITRE ATT&CK tagging
+- **Alert Management**: Lifecycle management with acknowledge/resolve workflows
+- **Threat Intelligence**: Real-time CVE enrichment via NVD API
+- **Behavioral Detection**: Multi-stage correlation patterns
 
-- **Phase 1** ✅: D1 Persistence, Strict Validation, Rate Limiting & API Keys
-- **Phase 2** ✅: Webhooks (Discord/Slack), MITRE ATT&CK Mapping, Advanced Charts  
-- **Phase 3** 🚀: Behavioral Correlation, ECS Normalization, Sigma Rules, JWT Auth
+### 📊 Analytics & Visualization
+- **Real-time Dashboard**: WebSocket-powered live updates
+- **Interactive Charts**: Timeline analysis and threat source visualization
+- **Summary Cards**: Aggregated metrics for alerts and events
+- **Advanced Filters**: Severity, status, source, and search capabilities
 
-This roadmap demonstrates enterprise-grade SIEM evolution from prototype to production-ready.
+### ☁️ Cloud-Native Architecture
+- **Cloudflare Pages**: Frontend deployment with global CDN
+- **Cloudflare Functions**: Serverless API backend
+- **Cloudflare D1**: Distributed SQLite database
+- **Rate Limiting**: Built-in DDoS protection
+- **CORS Security**: Cross-origin request protection
 
-## Core Capabilities
+### 🧪 Quality Assurance
+- **25+ Test Cases**: Comprehensive pytest coverage
+- **OpenAPI Docs**: Interactive API documentation
+- **CI/CD Pipeline**: Automated testing and deployment
+- **Structured Logging**: JSON-formatted audit trails
 
-- FastAPI backend with modular API routes
-- SQLite persistence for events, alerts, metrics and rule hits
-- Pages Functions + D1 path prepared for Cloudflare deployment
-- live dashboard with overview, alerts, events and status views
-- enterprise-style alert and event pages with summary cards, severity filters and source breakdown
-- automatic demo bootstrap for immediate showcase use
-- dark/light theme, density control, high contrast and reduced motion
-- multilingual UI: `pt-BR`, `en`, `es`
-- CI pipeline with lint, formatting, SAST, dependency audit, tests and Docker build
+## 📋 Implementation Status
 
-## Enterprise-ready enhancements
+### ✅ **PHASE 1: Core Persistence & Stability** (COMPLETED)
+- **D1 Integration**: Persistent Cloudflare D1 storage
+- **Payload Validation**: Enhanced Pydantic schemas with regex patterns
+- **Rate Limiting**: 600 requests/hour with proper Retry-After headers
+- **API Key Auth**: X-Heimdall-Key header validation
 
-These improvements move the project beyond a basic demo toward a polished security console:
+### ✅ **PHASE 2: Advanced UX & Integration** (COMPLETED)
+- **Chart.js Visualizations**: Timeline and threat source analytics
+- **Webhook Integration**: Discord/Slack notifications with platform-specific formatting
+- **MITRE ATT&CK Mapping**: Tactic/technique tagging on alerts and events
+- **Enterprise UI**: Dark theme, independent scrolling, summary cards
 
-- robust alert filters for status and severity
-- event search, severity filtering and source selection
-- top-line summary cards for alert and event views
-- interactive Chart.js visualizations for event flow and threat sources
-- clean enterprise dashboard presentation for analysts and SOC operators
+### ✅ **PHASE 3: Production Hardening** (COMPLETED)
+- **JWT Authentication**: Role-based access (admin/analyst) with token expiration
+- **Behavioral Correlation**: Multi-stage pattern detection with time windows
+- **ECS Normalization**: Elastic Common Schema field mapping
+- **Async Processing**: Webhook queue with exponential backoff retry
+- **Session Management**: Persistent user sessions with audit logging
 
-## Technical Architecture
+### ✅ **PHASE A: Enterprise UX Refinements** (COMPLETED)
+- **Real-time Updates**: WebSocket broadcasting for live alerts/events
+- **Login System**: Enterprise modal with localStorage persistence
+- **Structured Logging**: JSON-formatted request/response tracking
+- **Admin Controls**: JWT-protected webhook and system management
 
-**Detection & Events:**
-- YAML-based detection rules with regex pattern matching
-- SQLite-backed alert lifecycle management
-- Real-time CVE enrichment via NVD integration
-- Multi-field event normalization for standard ingestion
+### ✅ **PHASE C: Testing & Documentation** (COMPLETED)
+- **Comprehensive Tests**: 25+ pytest cases covering all endpoints
+- **OpenAPI/Swagger**: Interactive API documentation at `/docs`
+- **Performance Testing**: Rate limiting and load validation
+- **Production Checks**: CORS, static assets, error handling
 
-**Frontend:**
-- Vanilla JavaScript with no build step
-- Enterprise dark/light theme with accessibility controls
-- Responsive dashboard with independent sidebar and content scrolling
-- Internationalization support (pt-BR, en, es)
+### ✅ **PHASE B: Cloud Migration** (COMPLETED)
+- **D1 Migrations**: Automated schema updates for all tables
+- **Deployment Scripts**: One-click deploy to Cloudflare
+- **Production Config**: Environment variables and security headers
+- **Testing Suite**: Automated production validation
 
-**Backend:**
-- FastAPI with modular route organization
-- Pydantic schemas for payload validation
-- Automated demo bootstrap for showcase mode
-- CI/CD pipeline with linting, formatting, SAST, and Docker builds
+## 🏗️ Technical Architecture
 
-## Advanced Roadmap (3-month planning)
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │    │   API Gateway   │    │   Database      │
+│   (Pages)       │◄──►│   (Functions)   │◄──►│   (D1)          │
+│                 │    │                 │    │                 │
+│ • Vanilla JS    │    │ • FastAPI       │    │ • SQLite        │
+│ • Chart.js      │    │ • JWT Auth      │    │ • Migrations    │
+│ • WebSocket     │    │ • Rate Limiting │    │ • Audit Logs    │
+│ • i18n          │    │ • CORS          │    │ • Sessions      │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│ Real-time       │    │ Async Queue     │    │ Behavioral      │
+│ Updates         │    │ Processing      │    │ Detection       │
+│                 │    │                 │    │                 │
+│ • WebSocket     │    │ • Webhooks       │    │ • Correlation   │
+│ • Broadcasting  │    │ • Retry Logic   │    │ • ECS Schema    │
+│ • Live Metrics  │    │ • Multi-platform│    │ • Time Windows  │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
 
-### Phase 1: Core Persistence & Stability
-- **D1 Integration**: Move from in-memory demo to persistent Cloudflare D1 storage
-- **Payload Validation**: Enhance Pydantic schemas to catch malformed event data early
-- **Rate Limiting**: Protect ingest endpoints from DoS attacks via IP-based throttling
-- **Current Status**: ✅ Backend API ready, D1 schema prepared in `cloudflare/d1/0001_init.sql`
+## 🚀 Quick Start
 
-### Phase 2: Advanced Visualizations & UX
-- **Chart.js Enhancements**: Timeline graphs for event flow, threat source composition (✅ Added)
-- **Custom Alerts**: Real-time Slack/Discord webhook integration for critical detections
-- **Alert Deduplication**: Reduce noise by grouping correlated alerts
-- **MITRE ATT&CK Mapping**: Visually tag detections with MITRE tactics and techniques
-
-### Phase 3: Production Hardening
-- **Sigma Rule Support**: Parse industry-standard Sigma rules into Heimdall format
-- **ECS Normalization**: Adopt Elastic Common Schema for field consistency
-- **Behavioral Detection**: Multi-stage correlation (e.g., N failed logins → 1 success in T minutes)
-- **JWT Authentication**: Secure dashboard with Cloudflare Access or custom token validation
-- **KV Cache Layer**: Use Cloudflare KV for fast threat intel lookups during ingestion
-- **Queue Processing**: Async event processing via Cloudflare Queues for high-volume environments
-
-## Why This Project Validates Blue Team Competencies
-
-This project demonstrates advanced security engineering beyond "tool usage":
-
-| Competency | Evidence |
-|---|---|
-| **Log Analysis** | Custom YAML rules, field extraction, severity scoring |
-| **Detection Engineering** | Regex patterns, multi-source correlation, alert tuning |
-| **Threat Intelligence** | CVE enrichment, IP reputation tracking, MITRE mapping |
-| **Incident Response** | Alert triage, acknowledge/resolve workflows, prioritization |
-| **Infrastructure as Code** | Docker, GitHub Actions, SQLite schema versioning |
-| **Modern Security** | Detection as Code (YAML), DevSecOps automation, event normalization |
-
-## For Blue Team Interviewers
-
-If asked about this project, frame it as:
-
-> "I built Heimdall Gatekeeper to understand the full pipeline of a SIEM—from event ingestion to detection to alerting. I implemented detection rules in YAML, created a schema for normalized events, and integrated threat intelligence enrichment. This gave me hands-on experience in log correlation, false positive tuning, and incident response workflow automation—skills critical for SOC engineering."
-
-## Future roadmap
-
-### Local
+### Local Development
 
 ```bash
+# Clone and setup
+git clone https://github.com/Garcez7R/heimdall-gatekeeper.git
+cd heimdall-gatekeeper
+
+# Create virtual environment
 python3 -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt -r requirements-dev.txt
-# requirements-dev.txt includes test and quality tools, but the app runs with requirements.txt alone
-cp .env.example .env
+
+# Run development server
 uvicorn backend.api.main:app --reload
 ```
 
-Open:
+**Access:**
+- **Dashboard**: http://127.0.0.1:8000
+- **API Docs**: http://127.0.0.1:8000/docs
+- **Health Check**: http://127.0.0.1:8000/api/system/health
 
-- `http://127.0.0.1:8000`
-
-### Demo bootstrap
-
-- browser: `http://127.0.0.1:8000/api/demo/bootstrap`
-- terminal:
+### Demo Bootstrap
 
 ```bash
+# Bootstrap demo data
 curl http://127.0.0.1:8000/api/demo/bootstrap
 ```
 
-### Cloudflare
+**Demo Credentials:**
+- **Admin**: `admin` / `admin123`
+- **Analyst**: `analyst` / `analyst123`
 
-1. Create D1:
-
-```bash
-npx wrangler d1 create heimdall-gatekeeper
-```
-
-2. Apply schema:
+### Docker Deployment
 
 ```bash
-npx wrangler d1 execute heimdall-gatekeeper --remote --file=cloudflare/d1/0001_init.sql
+# Build and run
+docker build -t heimdall-gatekeeper .
+docker run -p 8000:8000 heimdall-gatekeeper
 ```
 
-3. In Pages use:
-- Framework preset: `None`
-- Build command: empty
-- Build output directory: `frontend`
+## ☁️ Cloudflare Production Deployment
 
-4. Confirm D1 binding:
-- Binding name: `DB`
+### Prerequisites
+```bash
+# Install Wrangler CLI
+npm install -g wrangler
 
-## Full Documentation
+# Authenticate
+wrangler auth login
+```
 
-- [Português (BR)](./README.pt-BR.md)
-- [English](./README.md)
-- [Español](./README.es.md)
+### Automated Deployment
 
-## License
+```bash
+# Run complete deployment
+bash cloudflare/deploy.sh
+```
+
+### Manual Deployment
+
+```bash
+# 1. Create D1 Database
+npx wrangler d1 create heimdall-db
+
+# 2. Run Migrations
+bash cloudflare/migrate-d1.sh
+
+# 3. Deploy Functions (API)
+npx wrangler deploy
+
+# 4. Deploy Pages (Frontend)
+cd frontend
+npx wrangler pages deploy . --project-name=heimdall-gatekeeper-frontend
+cd ..
+```
+
+### Production Testing
+
+```bash
+# Run production validation
+bash cloudflare/test-production.sh
+```
+
+## 🔧 API Reference
+
+### Authentication
+```bash
+# Login
+POST /api/auth/login
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+# Response
+{
+  "access_token": "eyJ...",
+  "token_type": "Bearer",
+  "expires_in": 86400
+}
+```
+
+### Webhooks (Admin Only)
+```bash
+# List webhooks
+GET /api/webhooks
+
+# Create webhook
+POST /api/admin/webhooks
+Authorization: Bearer <token>
+{
+  "name": "Discord Alerts",
+  "url": "https://discord.com/api/webhooks/...",
+  "platform": "discord",
+  "severity_filter": "high",
+  "active": true
+}
+```
+
+### Real-time Updates
+```javascript
+// Connect to WebSocket
+const ws = new WebSocket('wss://your-domain.workers.dev/ws/live?token=<jwt>');
+
+// Listen for updates
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  if (data.type === 'alert') {
+    // Handle new alert
+  }
+};
+```
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+pytest tests/ -v
+
+# Run with coverage
+pytest tests/ --cov=backend --cov-report=html
+
+# Run specific test
+pytest tests/test_webhooks.py::test_login_endpoint -v
+```
+
+## 📊 Monitoring & Observability
+
+### Health Checks
+- **System Health**: `/api/system/health`
+- **API Status**: `/api/config`
+- **Rate Limits**: Check `X-RateLimit-*` headers
+
+### Logging
+- **Structured JSON logs** in production
+- **Request/Response tracking** with timing
+- **Error categorization** with context
+
+### Metrics
+- **Events per minute** tracking
+- **Alert volume** monitoring
+- **Webhook delivery** success rates
+
+## 🔒 Security Features
+
+- **JWT Authentication** with configurable expiration
+- **Role-based Access Control** (admin/analyst)
+- **Rate Limiting** (600 req/hour default)
+- **CORS Protection** with origin validation
+- **Input Validation** with Pydantic schemas
+- **SQL Injection Prevention** via parameterized queries
+- **XSS Protection** with content sanitization
+
+## 🌍 Internationalization
+
+Supported languages:
+- **Portuguese (BR)**: `pt-BR`
+- **English**: `en`
+- **Spanish**: `es`
+
+Language switching available in dashboard preferences.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Ensure all tests pass
+6. Submit a pull request
+
+## 📚 Documentation
+
+- **[API Examples](./API_EXAMPLES.md)**: Complete API usage guide
+- **[Implementation Roadmap](./IMPLEMENTATION_ROADMAP.md)**: Technical evolution plan
+- **[Portuguese README](./README.pt-BR.md)**: Documentação em português
+- **[Spanish README](./README.es.md)**: Documentación en español
+
+## 🏆 Why This Project Matters
+
+Heimdall Gatekeeper demonstrates **enterprise-grade security engineering**:
+
+| Competency | Implementation |
+|---|---|
+| **Detection Engineering** | YAML rules, MITRE mapping, behavioral correlation |
+| **Threat Intelligence** | CVE enrichment, webhook notifications, ECS normalization |
+| **Incident Response** | Alert triage, real-time updates, audit logging |
+| **Infrastructure Security** | JWT auth, rate limiting, CORS, input validation |
+| **Cloud Architecture** | Serverless deployment, distributed database, CDN |
+| **DevSecOps** | CI/CD pipeline, automated testing, security headers |
+
+## 📄 License
 
 All rights reserved. Unauthorized use, modification, copying, or distribution is prohibited.
+
+---
+
+<p align="center">
+  <strong>Built with ❤️ for SOC teams worldwide</strong><br>
+  <em>Enterprise-grade security operations, simplified.</em>
+</p>

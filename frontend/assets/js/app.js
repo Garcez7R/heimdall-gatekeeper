@@ -77,7 +77,17 @@ function persistPreferences() {
 }
 
 async function request(path, options = {}) {
-  const response = await fetch(path, options);
+  const token = localStorage.getItem(AUTH_TOKEN_KEY);
+  const headers = {
+    "Content-Type": "application/json",
+    ...options.headers,
+  };
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(path, { ...options, headers });
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new Error(body.detail || body.error || `Request failed: ${response.status}`);
@@ -142,6 +152,41 @@ function revealApp() {
   if (splash) splash.hidden = true;
   const app = document.getElementById("app");
   if (app) app.hidden = false;
+}
+
+function showLoginModal() {
+  document.getElementById("login-modal").style.display = "flex";
+  document.getElementById("app").style.display = "none";
+}
+
+function hideLoginModal() {
+  document.getElementById("login-modal").style.display = "none";
+  document.getElementById("app").style.display = "block";
+}
+
+function checkAuthentication() {
+  const token = localStorage.getItem(AUTH_TOKEN_KEY);
+  if (!token) {
+    showLoginModal();
+    return false;
+  }
+
+  // Basic token validation (could be more sophisticated)
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const now = Date.now() / 1000;
+    if (payload.exp && payload.exp < now) {
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+      showLoginModal();
+      return false;
+    }
+    state.isAuthenticated = true;
+    return true;
+  } catch (e) {
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    showLoginModal();
+    return false;
+  }
 }
 
 function setView(view) {

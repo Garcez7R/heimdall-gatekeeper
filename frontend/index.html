@@ -12,6 +12,46 @@
   <body>
     <div class="toast-stack" id="toast-stack" aria-live="polite" aria-atomic="true"></div>
 
+    <!-- Login Modal (PHASE 3) -->
+    <div class="login-modal" id="login-modal" style="display: none;">
+      <div class="login-box">
+        <div class="login-header">
+          <img src="/assets/img/logo.png" alt="Heimdall" width="48" />
+          <h1>Heimdall Gatekeeper</h1>
+          <p>Enterprise SIEM Console</p>
+        </div>
+        <form id="login-form">
+          <label>
+            <span data-i18n="username">Username</span>
+            <input 
+              type="text" 
+              id="login-username" 
+              placeholder="admin or analyst" 
+              required 
+              autocomplete="username"
+            />
+          </label>
+          <label>
+            <span data-i18n="password">Password</span>
+            <input 
+              type="password" 
+              id="login-password" 
+              placeholder="••••••••" 
+              required 
+              autocomplete="current-password"
+            />
+          </label>
+          <button type="submit" class="btn-primary" style="width: 100%;">
+            <span data-i18n="login">Login</span>
+          </button>
+          <p style="font-size: 0.85rem; color: #888; margin-top: 12px; text-align: center;">
+            Demo: admin/admin123 or analyst/analyst123
+          </p>
+        </form>
+        <div id="login-error" style="color: #f87171; font-size: 0.9rem; margin-top: 12px; display: none;"></div>
+      </div>
+    </div>
+
     <div class="app-shell" id="app">
       <aside class="sidebar">
         <div class="sidebar-top">
