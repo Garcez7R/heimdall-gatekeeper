@@ -254,14 +254,31 @@ function updateClock() {
 function updateConsoleHeader(overview) {
   const healthy = String(overview.status.system || "").toLowerCase() === "healthy";
   const healthLabel = healthy ? text("healthy", "Healthy") : text("degraded", "Degraded");
-  document.getElementById("console-health-label").textContent = healthLabel;
-  document.getElementById("console-last-sync").textContent = `${text("lastSync", "Last sync")} ${new Intl.DateTimeFormat(state.language, {
+  const lastSync = new Intl.DateTimeFormat(state.language, {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
-  }).format(new Date())}`;
-  document.getElementById("console-note").textContent =
-    overview.status.active_alerts > 0
+  }).format(new Date());
+
+  const systemHealth = document.getElementById("system-health");
+  const uptime = document.getElementById("uptime-pill");
+  const lastIngest = document.getElementById("last-ingest-pill");
+  const liveClock = document.getElementById("live-clock");
+  const consoleHealth = document.getElementById("console-health-label");
+  const consoleLastSync = document.getElementById("console-last-sync");
+  const consoleNote = document.getElementById("console-note");
+
+  if (systemHealth) {
+    systemHealth.textContent = healthLabel;
+    systemHealth.className = `status-pill ${overview.status.system === "healthy" ? "healthy" : "degraded"}`;
+  }
+  if (uptime) uptime.textContent = `${text("uptime", "Uptime")} ${overview.status.uptime_seconds || 0}s`;
+  if (lastIngest) lastIngest.textContent = `${text("lastIngest", "Last ingest")} ${formatRelativeTime(overview.last_ingest_at)}`;
+  if (liveClock) liveClock.textContent = lastSync;
+  if (consoleHealth) consoleHealth.textContent = healthLabel;
+  if (consoleLastSync) consoleLastSync.textContent = `${text("lastSync", "Last sync")} ${lastSync}`;
+  if (consoleNote)
+    consoleNote.textContent = overview.status.active_alerts > 0
       ? text("consoleNoteAlerting", "Alert queue is active. Review priority items and confirm triage coverage.")
       : text("consoleNoteStable", "Signal flow stable. Monitoring live ingestion, alert queue and detection pressure.");
 }
@@ -474,6 +491,59 @@ function renderTopIps(rows) {
   });
 }
 
+function renderSourceBreakdown(sources) {
+  const canvasEl = document.getElementById("chart-source-breakdown");
+  if (!canvasEl) return;
+
+  if (!sources?.length) {
+    if (charts.sourceBreakdown) {
+      charts.sourceBreakdown.destroy();
+      charts.sourceBreakdown = null;
+    }
+    canvasEl.style.display = "none";
+    return;
+  }
+
+  const labels = sources.slice(0, 8).map((item) => item.source || "unknown");
+  const data = sources.slice(0, 8).map((item) => Number(item.total || 0));
+  const ctx = canvasEl.getContext("2d");
+
+  if (charts.sourceBreakdown) charts.sourceBreakdown.destroy();
+
+  charts.sourceBreakdown = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: text("sourceEvents", "Events by source"),
+          data,
+          backgroundColor: [
+            "rgba(56, 189, 248, 0.72)",
+            "rgba(16, 185, 129, 0.72)",
+            "rgba(251, 191, 36, 0.72)",
+            "rgba(249, 115, 22, 0.72)",
+            "rgba(168, 85, 247, 0.72)",
+            "rgba(34, 197, 94, 0.72)",
+            "rgba(59, 130, 246, 0.72)",
+            "rgba(236, 72, 153, 0.72)",
+          ],
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: { color: "rgba(255, 255, 255, 0.8)" },
+        },
+      },
+    },
+  });
+}
+
 function renderTimeline(points) {
   const canvasEl = document.getElementById("chart-timeline");
   if (!canvasEl) return;
@@ -590,6 +660,7 @@ async function loadOverview() {
   renderLatestAlerts(overview.latest_alerts || []);
   renderLatestEvents(overview.latest_events || []);
   renderTopIps(overview.top_ips || []);
+  renderSourceBreakdown(overview.top_sources || []);
   renderTimeline(overview.timeline || []);
   renderTopCves(overview.top_cves || []);
   renderStatusSummary(overview);
