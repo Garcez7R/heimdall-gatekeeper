@@ -376,6 +376,31 @@ button, input, select, textarea { font: inherit; }
   align-items: stretch;
 }
 
+.grafana-alert {
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+}
+
+.grafana-embed {
+  margin-top: 18px;
+}
+
+.grafana-iframe-wrap {
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 18px;
+  overflow: hidden;
+  min-height: 420px;
+  background: var(--panel);
+}
+
+.grafana-iframe-wrap iframe {
+  width: 100%;
+  min-height: 420px;
+  border: none;
+}
+
 .btn-block {
   width: 100%;
 }

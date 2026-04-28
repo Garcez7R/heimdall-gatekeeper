@@ -52,6 +52,9 @@ source .venv/bin/activate
 pip install -r requirements.txt -r requirements-dev.txt
 # requirements-dev.txt incluye herramientas de prueba y calidad, pero la app funciona con requirements.txt sola
 cp .env.example .env
+# Configure su URL de Grafana en .env para que la vista integrada funcione.
+# Ejemplo:
+# HEIMDALL_GRAFANA_URL=https://grafana.su-dominio.com
 uvicorn backend.api.main:app --reload
 ```
 

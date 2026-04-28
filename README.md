@@ -47,6 +47,9 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt -r requirements-dev.txt
 cp .env.example .env
+# Configure your Grafana deployment URL in .env if you want the built-in Grafana view to work.
+# Example:
+# HEIMDALL_GRAFANA_URL=https://grafana.example.com
 ```
 
 ## Live dashboard usage

@@ -998,16 +998,35 @@ async function bootstrap() {
     document.getElementById("grafana-view-launch"),
     document.getElementById("grafana-panel-launch"),
   ].filter(Boolean);
+  const grafanaEmbed = document.getElementById("grafana-embed-container");
+  const grafanaIframe = document.getElementById("grafana-iframe");
+  const grafanaMissing = document.getElementById("grafana-missing");
+  const grafanaUrl = (config.grafana_url || "").trim();
 
-  if (config.grafana_url && grafanaLinks.length) {
+  if (grafanaUrl && grafanaLinks.length) {
     grafanaLinks.forEach((link) => {
-      link.href = config.grafana_url;
+      link.href = grafanaUrl;
       link.style.display = "inline-flex";
     });
+    if (grafanaEmbed) {
+      grafanaEmbed.style.display = "block";
+    }
+    if (grafanaIframe) {
+      grafanaIframe.src = grafanaUrl;
+    }
+    if (grafanaMissing) {
+      grafanaMissing.style.display = "none";
+    }
   } else {
     grafanaLinks.forEach((link) => {
       link.style.display = "none";
     });
+    if (grafanaEmbed) {
+      grafanaEmbed.style.display = "none";
+    }
+    if (grafanaMissing) {
+      grafanaMissing.style.display = "block";
+    }
   }
   applyUiPreferences();
   await loadLanguage(state.language);

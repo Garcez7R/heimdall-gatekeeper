@@ -170,7 +170,7 @@
             <div class="topbar-tools">
               <span class="clock-pill" id="live-clock">--:--:--</span>
               <button class="primary-btn" id="global-refresh" data-i18n="manualRefresh">Refresh now</button>
-              <a class="btn-secondary" id="grafana-launch" href="#" target="_blank" rel="noreferrer noopener" style="display:none;">Grafana</a>
+              <a class="btn-secondary" id="grafana-launch" href="#" target="_blank" rel="noreferrer noopener" data-i18n="grafana" style="display:none;">Grafana</a>
             </div>
           </div>
         </header>
@@ -405,8 +405,16 @@
             </div>
             <p class="panel-subtitle" data-i18n="grafanaViewHint">Open the configured Grafana endpoint for full cloud observability.</p>
             <div class="panel-actions">
-              <a id="grafana-view-launch" class="btn-primary btn-block" href="#" target="_blank" rel="noreferrer noopener" style="display:none;">Open Grafana dashboard</a>
-              <p class="panel-note" data-i18n="grafanaConfigHint">If no Grafana URL is configured, set `HEIMDALL_GRAFANA_URL` in your deployment environment.</p>
+              <a id="grafana-view-launch" class="btn-primary btn-block" href="#" target="_blank" rel="noreferrer noopener" data-i18n="openGrafana" style="display:none;">Open Grafana dashboard</a>
+              <div id="grafana-missing" class="grafana-alert">
+                <p class="panel-note" data-i18n="grafanaConfigHint">If no Grafana URL is configured, set `HEIMDALL_GRAFANA_URL` in your deployment environment.</p>
+              </div>
+            </div>
+            <div id="grafana-embed-container" class="grafana-embed" style="display:none;">
+              <p class="panel-note" data-i18n="grafanaEmbedHint">If Grafana allows embedding, a live preview appears here. Otherwise open it in a new tab.</p>
+              <div class="grafana-iframe-wrap">
+                <iframe id="grafana-iframe" title="Grafana preview" sandbox="allow-same-origin allow-scripts allow-forms allow-popups" loading="lazy"></iframe>
+              </div>
             </div>
           </article>
         </section>
