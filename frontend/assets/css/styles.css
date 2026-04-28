@@ -368,6 +368,26 @@ button, input, select, textarea { font: inherit; }
   gap: 16px;
 }
 
+.panel-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 18px;
+  align-items: stretch;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .panel-actions {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+  }
+}
+
 .panel-subtitle {
   margin: 6px 0 0;
   color: var(--muted);

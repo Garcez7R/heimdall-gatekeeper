@@ -196,7 +196,8 @@ function setView(view) {
   document.querySelectorAll(".nav-item").forEach((el) => el.classList.remove("active"));
   document.getElementById(`view-${view}`)?.classList.add("active");
   document.querySelector(`.nav-item[data-view="${view}"]`)?.classList.add("active");
-  document.getElementById("view-title").textContent = text(view, view);
+  const titleText = view === "grafana" ? text("grafana", "Grafana") : text(view, view);
+  document.getElementById("view-title").textContent = titleText;
   document.getElementById("view-description").textContent = getViewDescription(view);
 }
 
@@ -206,6 +207,7 @@ function getViewDescription(view) {
     alerts: text("alertsDescription", "Triage, acknowledge and resolve detections with analyst-friendly context."),
     events: text("eventsDescription", "Search normalized events and inspect recent signals across monitored sources."),
     status: text("statusDescription", "Inspect engine state and inject controlled sample signals into the pipeline."),
+    grafana: text("grafanaDescription", "Open the configured Grafana dashboard for deep observability and deployment analytics."),
   };
   return descriptions[view] || descriptions.overview;
 }
@@ -993,6 +995,7 @@ async function bootstrap() {
   state.language = state.language || config.default_language || "en";
   const grafanaLinks = [
     document.getElementById("grafana-launch"),
+    document.getElementById("grafana-view-launch"),
     document.getElementById("grafana-panel-launch"),
   ].filter(Boolean);
 

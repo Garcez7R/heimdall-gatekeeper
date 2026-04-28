@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg" />
+    <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg" />
     <link rel="stylesheet" href="/assets/css/styles.css?v=20260428" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
   </head>
@@ -19,7 +19,7 @@
     <div class="login-modal" id="login-modal" style="display: none;">
       <div class="login-box">
         <div class="login-header">
-          <img src="/assets/img/logo.svg" alt="Heimdall" width="48" />
+          <img src="assets/img/logo.svg" alt="Heimdall" width="48" />
           <h1>Heimdall Gatekeeper</h1>
           <p>Enterprise SIEM Console</p>
           <p class="small-note">MITRE ATT&CK-aware alert correlation.</p>
@@ -60,7 +60,7 @@
       <aside class="sidebar">
         <div class="sidebar-top">
           <div class="brand">
-            <img class="brand-logo" src="/assets/img/logo.svg" alt="Heimdall Gatekeeper logo" />
+            <img class="brand-logo" src="assets/img/logo.svg" alt="Heimdall Gatekeeper logo" />
             <div>
               <strong>Heimdall Gatekeeper</strong>
               <small id="tagline">Minimal SIEM for Blue Teams</small>
@@ -81,6 +81,7 @@
             <button class="nav-item" data-view="alerts" data-i18n="alerts">Alerts</button>
             <button class="nav-item" data-view="events" data-i18n="events">Events</button>
             <button class="nav-item" data-view="status" data-i18n="status">System Status</button>
+            <button class="nav-item" data-view="grafana" data-i18n="grafana">Grafana</button>
           </nav>
         </div>
 
@@ -395,6 +396,19 @@
               <div id="ingest-result" class="inline-note"></div>
             </article>
           </div>
+        </section>
+        <section class="view" id="view-grafana">
+          <article class="panel">
+            <div class="panel-head">
+              <p class="eyebrow" data-i18n="observability">Observability</p>
+              <h3 data-i18n="grafanaConsole">Grafana Dashboard</h3>
+            </div>
+            <p class="panel-subtitle" data-i18n="grafanaViewHint">Open the configured Grafana endpoint for full cloud observability.</p>
+            <div class="panel-actions">
+              <a id="grafana-view-launch" class="btn-primary btn-block" href="#" target="_blank" rel="noreferrer noopener" style="display:none;">Open Grafana dashboard</a>
+              <p class="panel-note" data-i18n="grafanaConfigHint">If no Grafana URL is configured, set `HEIMDALL_GRAFANA_URL` in your deployment environment.</p>
+            </div>
+          </article>
         </section>
       </main>
     </div>

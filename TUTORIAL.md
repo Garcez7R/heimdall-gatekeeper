@@ -66,11 +66,11 @@ Then open:
 
 - `http://localhost:9090` for Prometheus
 
-### Use the Grafana link
+### Use the Grafana view
 
-The frontend includes a Grafana button on the overview page only when a deployable Grafana endpoint is configured.
+The frontend includes a Grafana menu entry in the left navigation when a deployable Grafana endpoint is configured.
 Provide the online Grafana URL by setting `HEIMDALL_GRAFANA_URL` in your deployment environment.
-Click the button to jump directly into the dashboard and inspect:
+Open that view to jump directly into the observability dashboard and inspect:
 
 - event throughput,
 - alert counts,

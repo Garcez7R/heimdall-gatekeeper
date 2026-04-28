@@ -49,7 +49,8 @@ cp .env.example .env
 - Use `Alerts` to review, acknowledge, or resolve active detections.
 - Use `Events` to search recent signals by type, source, and severity.
 - Use `Status` to inspect engine health and inject sample events for live testing.
-- When monitoring is active, open Grafana using the online Grafana URL configured for your deployment.
+- Use `Grafana` from the left sidebar to open the configured observability dashboard.
+- Use the sidebar language selector to switch UI text at runtime.
 
 Read the detailed usage notes in [`TUTORIAL.md`](TUTORIAL.md).
 
