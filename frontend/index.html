@@ -192,7 +192,7 @@
                 <p class="eyebrow" data-i18n="threatSources">Threat Sources</p>
                 <h3 data-i18n="topIps">Top suspicious IPs</h3>
               </div>
-              <div id="top-ips" class="stack"></div>
+              <canvas id="chart-top-ips"></canvas>
             </article>
 
             <article class="panel">
@@ -241,12 +241,9 @@
           </div>
 
           <article class="panel">
-            <div class="panel-head panel-head-space-between">
-              <div>
-                <p class="eyebrow" data-i18n="sourceBreakdown">Source breakdown</p>
-                <h3 data-i18n="grafanaHint">Grafana operational view</h3>
-              </div>
-              <a class="btn-secondary" id="grafana-panel-launch" href="#" target="_blank" rel="noreferrer noopener" style="display:none;">Open Grafana</a>
+            <div class="panel-head">
+              <p class="eyebrow" data-i18n="sourceBreakdown">Source breakdown</p>
+              <h3 data-i18n="sourceBreakdownTitle">Events by source</h3>
             </div>
             <canvas id="chart-source-breakdown"></canvas>
           </article>
