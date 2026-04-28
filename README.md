@@ -2,6 +2,13 @@
   <img src="./frontend/assets/img/logo.svg" alt="Heimdall Gatekeeper logo" width="220" />
 </p>
 
+<p align="center">
+  <strong>Selecionar idioma:</strong>
+  <a href="./README.pt-BR.md">Português (BR)</a> |
+  <a href="./README.md">English</a> |
+  <a href="./README.es.md">Español</a>
+</p>
+
 # ᚺ Heimdall Gatekeeper
 
 **Cloudflare-ready SIEM console** for event ingestion, alert management, webhook delivery, threat intelligence, and observability.

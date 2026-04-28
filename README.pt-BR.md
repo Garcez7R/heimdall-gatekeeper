@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Garcez7R/heimdall-gatekeeper/main/logo.png" alt="Logotipo do Heimdall Gatekeeper" width="220" />
+  <img src="./frontend/assets/img/logo.svg" alt="Logotipo do Heimdall Gatekeeper" width="220" />
 </p>
 
 # ᚺ Heimdall Gatekeeper
