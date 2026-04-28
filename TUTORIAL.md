@@ -64,13 +64,13 @@ docker compose -f monitoring/docker-compose.monitoring.yml up -d
 
 Then open:
 
-- `http://localhost:3000` for Grafana
 - `http://localhost:9090` for Prometheus
 
 ### Use the Grafana link
 
-The frontend includes a Grafana button on the overview page.
-Click it to jump directly into the dashboard and inspect:
+The frontend includes a Grafana button on the overview page only when a deployable Grafana endpoint is configured.
+Provide the online Grafana URL by setting `HEIMDALL_GRAFANA_URL` in your deployment environment.
+Click the button to jump directly into the dashboard and inspect:
 
 - event throughput,
 - alert counts,
@@ -95,7 +95,7 @@ The public pages should expose:
 ## 9. Troubleshooting
 
 - If the dashboard appears stale, refresh the browser and use the `Refresh` button.
-- If Grafana does not load, verify the monitoring stack is running and confirm `http://localhost:3000` is reachable.
+- If Grafana does not load, verify the configured `HEIMDALL_GRAFANA_URL` is reachable.
 - If no events appear, use the ingest form or demo bootstrap endpoint to populate sample data.
 
 ## 10. Recommended flow

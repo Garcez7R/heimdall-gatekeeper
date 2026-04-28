@@ -19,4 +19,5 @@ def config() -> dict[str, object]:
         "default_language": ui.get("default_language", "en"),
         "default_theme": ui.get("default_theme", "dark"),
         "splash_duration_ms": ui.get("splash_duration_ms", 1200),
+        "grafana_url": ui.get("grafana_url", ""),
     }

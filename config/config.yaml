@@ -43,5 +43,6 @@ ui:
   default_theme: dark
   splash_enabled: true
   splash_duration_ms: 1200
+  grafana_url: ""
   density: comfortable
   reduce_motion_respected: true

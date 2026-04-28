@@ -78,6 +78,7 @@ def load_config() -> dict[str, Any]:
     ui["default_language"] = os.getenv("HEIMDALL_DEFAULT_LANGUAGE", ui.get("default_language", "pt-BR"))
     ui["default_theme"] = os.getenv("HEIMDALL_DEFAULT_THEME", ui.get("default_theme", "dark"))
     ui["splash_duration_ms"] = int(os.getenv("HEIMDALL_SPLASH_DURATION_MS", str(ui.get("splash_duration_ms", 1200))))
+    ui["grafana_url"] = os.getenv("HEIMDALL_GRAFANA_URL", ui.get("grafana_url", ""))
     return config
 
 

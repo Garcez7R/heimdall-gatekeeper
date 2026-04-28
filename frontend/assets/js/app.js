@@ -216,9 +216,15 @@ function applyUiPreferences() {
   document.body.classList.toggle("compact", state.density === "compact");
   document.body.classList.toggle("high-contrast", state.highContrast);
   document.body.classList.toggle("reduce-motion", state.reduceMotion);
-  document.getElementById("theme-switcher").value = state.theme;
-  document.getElementById("density-switcher").value = state.density;
-  document.getElementById("language-switcher").value = state.language;
+
+  const themeSwitcher = document.getElementById("theme-switcher");
+  const densitySwitcher = document.getElementById("density-switcher");
+  const languageSwitcher = document.getElementById("language-switcher");
+
+  if (themeSwitcher) themeSwitcher.value = state.theme;
+  if (densitySwitcher) densitySwitcher.value = state.density;
+  if (languageSwitcher) languageSwitcher.value = state.language;
+
   persistPreferences();
 }
 
@@ -284,6 +290,9 @@ function updateConsoleHeader(overview) {
 }
 
 function renderMetrics(overview) {
+  const grid = document.getElementById("metric-grid");
+  if (!grid) return;
+
   const metrics = [
     [text("events", "Events"), overview.status.events_total, text("eventsHint", "Normalized events stored in the pipeline.")],
     [text("activeAlerts", "Active Alerts"), overview.status.active_alerts, text("activeAlertsHint", "Alerts still requiring analyst action.")],
@@ -291,7 +300,7 @@ function renderMetrics(overview) {
     [text("eventsPerMinute", "Events/min"), overview.events_per_minute || "0", text("eventsPerMinuteHint", "Recent operational ingestion cadence.")],
   ];
 
-  document.getElementById("metric-grid").innerHTML = metrics
+  grid.innerHTML = metrics
     .map(
       ([label, value, hint]) => `
         <article class="metric">
@@ -321,10 +330,12 @@ function renderMetrics(overview) {
 function renderRuleHits(rows) {
   const sidebar = document.getElementById("rule-hits-sidebar");
   const main = document.getElementById("rule-hits-main");
+  if (!sidebar && !main) return;
+
   if (!rows?.length) {
     const empty = `<div class="mini-stack-item"><strong>${escapeHtml(text("noRuleHits", "No rule activity yet"))}</strong><span>${escapeHtml(text("noRuleHitsHint", "Rules will appear here as detections trigger."))}</span></div>`;
-    sidebar.innerHTML = empty;
-    main.innerHTML = `<div class="stack-item">${escapeHtml(text("noRuleHitsHint", "Rules will appear here as detections trigger."))}</div>`;
+    if (sidebar) sidebar.innerHTML = empty;
+    if (main) main.innerHTML = `<div class="stack-item">${escapeHtml(text("noRuleHitsHint", "Rules will appear here as detections trigger."))}</div>`;
     return;
   }
 
@@ -357,6 +368,7 @@ function renderRuleHits(rows) {
 
 function renderLatestAlerts(rows) {
   const container = document.getElementById("latest-alerts");
+  if (!container) return;
   if (!rows?.length) {
     container.innerHTML = `<div class="stack-item">${escapeHtml(text("noAlerts", "No active alerts yet."))}</div>`;
     return;
@@ -383,6 +395,7 @@ function renderLatestAlerts(rows) {
 
 function renderLatestEvents(rows) {
   const container = document.getElementById("latest-events");
+  if (!container) return;
   if (!rows?.length) {
     container.innerHTML = `<div class="stack-item">${escapeHtml(text("noEvents", "No recent events yet."))}</div>`;
     return;
@@ -411,13 +424,17 @@ function renderAlertsSummary(rows) {
   const total = rows.length;
   const active = rows.filter((row) => String(row.status).toLowerCase() === "active").length;
   const highSeverity = rows.filter((row) => ["high", "critical"].includes(String(row.severity).toLowerCase())).length;
-  document.getElementById("alerts-summary-total").textContent = total;
-  document.getElementById("alerts-summary-active").textContent = active;
-  document.getElementById("alerts-summary-high").textContent = highSeverity;
+  const totalEl = document.getElementById("alerts-summary-total");
+  const activeEl = document.getElementById("alerts-summary-active");
+  const highEl = document.getElementById("alerts-summary-high");
+  if (totalEl) totalEl.textContent = total;
+  if (activeEl) activeEl.textContent = active;
+  if (highEl) highEl.textContent = highSeverity;
 }
 
 function renderEventSourceOptions(rows) {
   const sourceSelect = document.getElementById("event-source-filter");
+  if (!sourceSelect) return;
   const current = sourceSelect.value;
   const sources = [...new Set(rows.map((row) => row.source).filter(Boolean))].sort();
   sourceSelect.innerHTML = `<option value="">All sources</option>` +
@@ -429,9 +446,12 @@ function renderEventsSummary(rows) {
   const total = rows.length;
   const sources = new Set(rows.map((row) => row.source).filter(Boolean)).size;
   const highSeverity = rows.filter((row) => ["high", "critical"].includes(String(row.severity).toLowerCase())).length;
-  document.getElementById("events-summary-total").textContent = total;
-  document.getElementById("events-summary-sources").textContent = sources;
-  document.getElementById("events-summary-severity").textContent = highSeverity;
+  const totalEl = document.getElementById("events-summary-total");
+  const sourcesEl = document.getElementById("events-summary-sources");
+  const highEl = document.getElementById("events-summary-severity");
+  if (totalEl) totalEl.textContent = total;
+  if (sourcesEl) sourcesEl.textContent = sources;
+  if (highEl) highEl.textContent = highSeverity;
 }
 
 function renderTopIps(rows) {
@@ -629,6 +649,7 @@ function renderTopCves(rows) {
 
 function renderStatusSummary(overview) {
   const container = document.getElementById("status-summary");
+  if (!container) return;
   const topSource = overview.top_sources?.[0];
   const topRule = overview.status.rule_hits?.[0];
   const rows = [
@@ -702,15 +723,20 @@ async function ensureDemoBootstrap() {
 }
 
 async function loadAlerts() {
-  const status = document.getElementById("alert-status-filter").value;
-  const severity = document.getElementById("alert-severity-filter").value;
+  const statusFilter = document.getElementById("alert-status-filter");
+  const severityFilter = document.getElementById("alert-severity-filter");
+  const alertsTable = document.getElementById("alerts-table");
+  if (!alertsTable) return;
+
+  const status = statusFilter?.value || "";
+  const severity = severityFilter?.value || "";
   const query = new URLSearchParams();
   if (status) query.set("status", status);
   if (severity) query.set("severity", severity);
   const payload = await request(`/api/alerts?${query.toString()}`);
   const rows = payload.rows || [];
   renderAlertsSummary(rows);
-  document.getElementById("alerts-table").innerHTML = rows
+  alertsTable.innerHTML = rows
     .map(
       (row) => `
         <tr>
@@ -731,9 +757,15 @@ async function loadAlerts() {
 }
 
 async function loadEvents() {
-  const search = document.getElementById("event-search").value;
-  const severity = document.getElementById("event-severity-filter").value;
-  const source = document.getElementById("event-source-filter").value;
+  const searchInput = document.getElementById("event-search");
+  const severityFilter = document.getElementById("event-severity-filter");
+  const sourceFilter = document.getElementById("event-source-filter");
+  const eventsTable = document.getElementById("events-table");
+  if (!eventsTable) return;
+
+  const search = searchInput?.value || "";
+  const severity = severityFilter?.value || "";
+  const source = sourceFilter?.value || "";
   const query = new URLSearchParams();
   if (search) query.set("search", search);
   if (severity) query.set("severity", severity);
@@ -742,7 +774,7 @@ async function loadEvents() {
   renderEventSourceOptions(allRows);
   const rows = allRows.filter((row) => !source || row.source === source);
   renderEventsSummary(rows);
-  document.getElementById("events-table").innerHTML = rows
+  eventsTable.innerHTML = rows
     .map(
       (row) => `
         <tr>
@@ -760,7 +792,10 @@ async function loadEvents() {
 
 async function loadStatus() {
   const payload = await request("/api/overview");
-  document.getElementById("status-json").textContent = JSON.stringify(payload.status, null, 2);
+  const statusJson = document.getElementById("status-json");
+  if (statusJson) {
+    statusJson.textContent = JSON.stringify(payload.status, null, 2);
+  }
 }
 
 async function loadLanguage(language) {
@@ -803,6 +838,8 @@ function installAutoRefresh() {
 
 function buildPresetButtons() {
   const container = document.getElementById("ingest-presets");
+  if (!container) return;
+
   container.innerHTML = ingestPresets
     .map(
       (preset, index) => `
@@ -817,6 +854,7 @@ function buildPresetButtons() {
     const preset = ingestPresets[Number(button.dataset.presetIndex)];
     if (!preset) return;
     const form = document.getElementById("ingest-form");
+    if (!form) return;
     Object.entries(preset).forEach(([key, value]) => {
       const field = form.elements.namedItem(key);
       if (field) field.value = value;
@@ -826,7 +864,11 @@ function buildPresetButtons() {
 
 async function refreshAll(silent = false) {
   try {
-    await Promise.all([loadOverview(), loadAlerts(), loadEvents(), loadStatus()]);
+    const requests = [loadOverview()];
+    if (document.getElementById("alerts-table")) requests.push(loadAlerts());
+    if (document.getElementById("events-table") || document.getElementById("event-source-filter")) requests.push(loadEvents());
+    if (document.getElementById("status-json") || document.getElementById("status-summary")) requests.push(loadStatus());
+    await Promise.all(requests);
     if (!silent) pushToast(text("consoleRefreshed", "Console refreshed successfully."), "success");
   } catch (error) {
     if (!silent) pushToast(error.message, "error");
@@ -841,73 +883,106 @@ function bindEvents() {
     })
   );
 
-  document.getElementById("global-refresh").addEventListener("click", () => refreshAll());
-  document.getElementById("reload-alerts").addEventListener("click", loadAlerts);
-  document.getElementById("reload-events").addEventListener("click", loadEvents);
-  document.getElementById("alert-status-filter").addEventListener("change", loadAlerts);
-  document.getElementById("alert-severity-filter").addEventListener("change", loadAlerts);
-  document.getElementById("event-search").addEventListener("input", loadEvents);
-  document.getElementById("event-severity-filter").addEventListener("change", loadEvents);
-  document.getElementById("event-source-filter").addEventListener("change", loadEvents);
+  const globalRefresh = document.getElementById("global-refresh");
+  const reloadAlerts = document.getElementById("reload-alerts");
+  const reloadEvents = document.getElementById("reload-events");
+  const alertStatusFilter = document.getElementById("alert-status-filter");
+  const alertSeverityFilter = document.getElementById("alert-severity-filter");
+  const eventSearch = document.getElementById("event-search");
+  const eventSeverityFilter = document.getElementById("event-severity-filter");
+  const eventSourceFilter = document.getElementById("event-source-filter");
+  const languageSwitcher = document.getElementById("language-switcher");
+  const themeSwitcher = document.getElementById("theme-switcher");
+  const densitySwitcher = document.getElementById("density-switcher");
+  const contrastToggle = document.getElementById("contrast-toggle");
+  const motionToggle = document.getElementById("motion-toggle");
+  const alertsTable = document.getElementById("alerts-table");
+  const ingestForm = document.getElementById("ingest-form");
+  const ingestResult = document.getElementById("ingest-result");
 
-  document.getElementById("language-switcher").addEventListener("change", (event) => loadLanguage(event.target.value));
-  document.getElementById("theme-switcher").addEventListener("change", (event) => {
-    state.theme = event.target.value;
-    applyUiPreferences();
-  });
-  document.getElementById("density-switcher").addEventListener("change", (event) => {
-    state.density = event.target.value;
-    applyUiPreferences();
-  });
-  document.getElementById("contrast-toggle").addEventListener("click", () => {
-    state.highContrast = !state.highContrast;
-    applyUiPreferences();
-  });
-  document.getElementById("motion-toggle").addEventListener("click", () => {
-    state.reduceMotion = !state.reduceMotion;
-    applyUiPreferences();
-  });
+  if (globalRefresh) globalRefresh.addEventListener("click", () => refreshAll());
+  if (reloadAlerts) reloadAlerts.addEventListener("click", loadAlerts);
+  if (reloadEvents) reloadEvents.addEventListener("click", loadEvents);
+  if (alertStatusFilter) alertStatusFilter.addEventListener("change", loadAlerts);
+  if (alertSeverityFilter) alertSeverityFilter.addEventListener("change", loadAlerts);
+  if (eventSearch) eventSearch.addEventListener("input", loadEvents);
+  if (eventSeverityFilter) eventSeverityFilter.addEventListener("change", loadEvents);
+  if (eventSourceFilter) eventSourceFilter.addEventListener("change", loadEvents);
 
-  document.getElementById("alerts-table").addEventListener("click", async (event) => {
-    const button = event.target.closest("button");
-    if (!button) return;
-    const action = button.dataset.action;
-    const id = button.dataset.id;
-    const endpoint = action === "resolve" ? "resolve" : "acknowledge";
-    try {
-      await request(`/api/alerts/${id}/${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ actor: "dashboard-operator" }),
-      });
-      pushToast(text("alertActionSuccess", "Alert updated successfully."), "success");
-      await refreshAll(true);
-    } catch (error) {
-      pushToast(error.message, "error");
-    }
-  });
+  if (languageSwitcher) {
+    languageSwitcher.addEventListener("change", (event) => loadLanguage(event.target.value));
+  }
+  if (themeSwitcher) {
+    themeSwitcher.addEventListener("change", (event) => {
+      state.theme = event.target.value;
+      applyUiPreferences();
+    });
+  }
+  if (densitySwitcher) {
+    densitySwitcher.addEventListener("change", (event) => {
+      state.density = event.target.value;
+      applyUiPreferences();
+    });
+  }
+  if (contrastToggle) {
+    contrastToggle.addEventListener("click", () => {
+      state.highContrast = !state.highContrast;
+      applyUiPreferences();
+    });
+  }
+  if (motionToggle) {
+    motionToggle.addEventListener("click", () => {
+      state.reduceMotion = !state.reduceMotion;
+      applyUiPreferences();
+    });
+  }
 
-  document.getElementById("ingest-form").addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    const payload = Object.fromEntries(form.entries());
-    payload.tags = ["demo", "dashboard"];
-    try {
-      const result = await request("/api/events/ingest", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      document.getElementById("ingest-result").textContent =
-        `${text("eventProcessed", "Event processed")}: ${result.event_id}. ` +
-        `${text("alertsTriggered", "Alerts triggered")}: ${result.alert_ids.length}`;
-      pushToast(text("ingestSuccess", "Sample event ingested successfully."), "success");
-      event.currentTarget.reset();
-      await refreshAll(true);
-    } catch (error) {
-      pushToast(error.message, "error");
-    }
-  });
+  if (alertsTable) {
+    alertsTable.addEventListener("click", async (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+      const action = button.dataset.action;
+      const id = button.dataset.id;
+      const endpoint = action === "resolve" ? "resolve" : "acknowledge";
+      try {
+        await request(`/api/alerts/${id}/${endpoint}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ actor: "dashboard-operator" }),
+        });
+        pushToast(text("alertActionSuccess", "Alert updated successfully."), "success");
+        await refreshAll(true);
+      } catch (error) {
+        pushToast(error.message, "error");
+      }
+    });
+  }
+
+  if (ingestForm) {
+    ingestForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const payload = Object.fromEntries(form.entries());
+      payload.tags = ["demo", "dashboard"];
+      try {
+        const result = await request("/api/events/ingest", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (ingestResult) {
+          ingestResult.textContent =
+            `${text("eventProcessed", "Event processed")}: ${result.event_id}. ` +
+            `${text("alertsTriggered", "Alerts triggered")}: ${result.alert_ids.length}`;
+        }
+        pushToast(text("ingestSuccess", "Sample event ingested successfully."), "success");
+        event.currentTarget.reset();
+        await refreshAll(true);
+      } catch (error) {
+        pushToast(error.message, "error");
+      }
+    });
+  }
 }
 
 async function bootstrap() {
@@ -916,6 +991,15 @@ async function bootstrap() {
   document.getElementById("tagline").textContent = config.tagline;
   state.theme = state.theme || config.default_theme || "dark";
   state.language = state.language || config.default_language || "en";
+  const grafanaLink = document.getElementById("grafana-launch");
+  if (grafanaLink) {
+    if (config.grafana_url) {
+      grafanaLink.href = config.grafana_url;
+      grafanaLink.style.display = "inline-flex";
+    } else {
+      grafanaLink.style.display = "none";
+    }
+  }
   applyUiPreferences();
   await loadLanguage(state.language);
   buildPresetButtons();

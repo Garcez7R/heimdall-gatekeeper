@@ -49,7 +49,7 @@ cp .env.example .env
 - Use `Alerts` to review, acknowledge, or resolve active detections.
 - Use `Events` to search recent signals by type, source, and severity.
 - Use `Status` to inspect engine health and inject sample events for live testing.
-- When monitoring is active, launch Grafana at `http://localhost:3000` to explore the full observability dashboard.
+- When monitoring is active, open Grafana using the online Grafana URL configured for your deployment.
 
 Read the detailed usage notes in [`TUTORIAL.md`](TUTORIAL.md).
 
@@ -117,9 +117,10 @@ Heimdall includes a monitoring stack in `monitoring/`:
 docker compose -f monitoring/docker-compose.monitoring.yml up -d
 ```
 
-- Grafana: http://localhost:3000
-- Prometheus: http://localhost:9090
-- Alertmanager: http://localhost:9093
+- Prometheus: `http://localhost:9090`
+- Alertmanager: `http://localhost:9093`
+
+If Grafana is available in a deployed environment, expose the public dashboard using `HEIMDALL_GRAFANA_URL`.
 
 ## Environment variables
 
@@ -136,6 +137,7 @@ Optional threat intelligence keys:
 - `ABUSEIPDB_API_KEY`
 - `VIRUSTOTAL_API_KEY`
 - `SHODAN_API_KEY`
+- `HEIMDALL_GRAFANA_URL` — public Grafana URL to expose in the online dashboard
 
 Optional SIEM integrations:
 - `SPLUNK_HEC_URL`
