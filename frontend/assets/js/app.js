@@ -991,14 +991,20 @@ async function bootstrap() {
   document.getElementById("tagline").textContent = config.tagline;
   state.theme = state.theme || config.default_theme || "dark";
   state.language = state.language || config.default_language || "en";
-  const grafanaLink = document.getElementById("grafana-launch");
-  if (grafanaLink) {
-    if (config.grafana_url) {
-      grafanaLink.href = config.grafana_url;
-      grafanaLink.style.display = "inline-flex";
-    } else {
-      grafanaLink.style.display = "none";
-    }
+  const grafanaLinks = [
+    document.getElementById("grafana-launch"),
+    document.getElementById("grafana-panel-launch"),
+  ].filter(Boolean);
+
+  if (config.grafana_url && grafanaLinks.length) {
+    grafanaLinks.forEach((link) => {
+      link.href = config.grafana_url;
+      link.style.display = "inline-flex";
+    });
+  } else {
+    grafanaLinks.forEach((link) => {
+      link.style.display = "none";
+    });
   }
   applyUiPreferences();
   await loadLanguage(state.language);

@@ -122,76 +122,279 @@
         <div class="sidebar-controls">
           <div class="panel-head compact">
             <p class="eyebrow" data-i18n="operatorControls">Operator Controls</p>
-            <button class="btn-secondary" id="refresh-button" data-i18n="refresh">Refresh</button>
+            <h3 data-i18n="preferences">Preferences</h3>
           </div>
+
+          <label>
+            <span data-i18n="language">Language</span>
+            <select id="language-switcher">
+              <option value="pt-BR">🇧🇷 PT</option>
+              <option value="en">🇺🇸 EN</option>
+              <option value="es">🇪🇸 ES</option>
+            </select>
+          </label>
+          <label>
+            <span data-i18n="theme">Theme</span>
+            <select id="theme-switcher">
+              <option value="dark" data-i18n="dark">Dark</option>
+              <option value="light" data-i18n="light">Light</option>
+            </select>
+          </label>
+          <label>
+            <span data-i18n="density">Density</span>
+            <select id="density-switcher">
+              <option value="comfortable" data-i18n="comfortable">Comfortable</option>
+              <option value="compact" data-i18n="compact">Compact</option>
+            </select>
+          </label>
+          <button class="toggle-btn" id="contrast-toggle" data-i18n="highContrast">High contrast</button>
+          <button class="toggle-btn" id="motion-toggle" data-i18n="reduceMotion">Reduce motion</button>
         </div>
       </aside>
 
-      <main class="main-content">
+      <main class="content">
         <header class="topbar">
-          <div class="topbar-block">
-            <div class="view-title-block">
-              <h2 id="view-title" data-i18n="dashboard">Dashboard</h2>
-              <p id="view-description" data-i18n="dashboardSubtitle">Live monitoring for alerts, events, and SLA performance.</p>
-            </div>
-            <div class="topbar-meta">
-              <span class="status-pill" id="system-health">Healthy</span>
-              <span class="mini-pill" id="uptime-pill">Uptime 0s</span>
-              <span class="mini-pill" id="last-ingest-pill">Last ingest n/d</span>
-              <span class="mini-pill" id="live-clock">00:00:00</span>
-            </div>
+          <div>
+            <p class="eyebrow" data-i18n="securityConsole">Security Console</p>
+            <h2 id="view-title" data-i18n="dashboard">Overview</h2>
+            <p class="topbar-copy" id="view-description" data-i18n="overviewDescription">Operational visibility for alert queue, event flow and detection coverage.</p>
+            <div class="topbar-note" data-i18n="overviewNote">Live operational insights updated automatically with every refresh.</div>
           </div>
           <div class="topbar-actions">
-            <button class="btn-secondary" id="global-refresh" data-i18n="refresh">Refresh</button>
-            <a class="btn-primary" id="grafana-launch" href="http://localhost:3000" target="_blank" rel="noreferrer noopener">Grafana</a>
+            <div class="topbar-status">
+              <span class="status-pill healthy" id="system-health">Healthy</span>
+              <span class="status-pill" id="uptime-pill">Uptime 0s</span>
+              <span class="status-pill" id="last-ingest-pill">Last ingest n/a</span>
+            </div>
+            <div class="topbar-tools">
+              <span class="clock-pill" id="live-clock">--:--:--</span>
+              <button class="primary-btn" id="global-refresh" data-i18n="manualRefresh">Refresh now</button>
+              <a class="btn-secondary" id="grafana-launch" href="#" target="_blank" rel="noreferrer noopener" style="display:none;">Grafana</a>
+            </div>
           </div>
         </header>
 
         <section class="view active" id="view-overview">
-          <div class="overview-grid">
-            <div class="panel overview-summary">
-              <div id="metric-grid" class="metric-grid"></div>
-            </div>
-              <div class="panel overview-status-panel">
+          <div class="metric-grid" id="metric-grid"></div>
+
+          <div class="grid three-col">
+            <article class="panel">
               <div class="panel-head">
-                <h3 data-i18n="quickStatus">Quick status</h3>
+                <p class="eyebrow" data-i18n="analytics">Analytics</p>
+                <h3 data-i18n="rulePressure">Rule pressure</h3>
               </div>
-              <p class="panel-subtitle" data-i18n="quickStatusHint">The top bar surface shows live health, uptime, and ingestion status.</p>
-            </div>
+              <div id="rule-hits-main" class="stack"></div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-head">
+                <p class="eyebrow" data-i18n="threatSources">Threat Sources</p>
+                <h3 data-i18n="topIps">Top suspicious IPs</h3>
+              </div>
+              <div id="top-ips" class="stack"></div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-head">
+                <p class="eyebrow" data-i18n="threatIntelligence">Threat Intelligence</p>
+                <h3 data-i18n="observedCves">Observed CVEs</h3>
+              </div>
+              <div id="top-cves" class="stack"></div>
+            </article>
           </div>
 
-          <div class="overview-panels">
-            <div class="panel">
+          <div class="grid two-col">
+            <article class="panel">
               <div class="panel-head">
-                <div>
-                  <h3 data-i18n="timeline">Timeline</h3>
-                  <p class="panel-subtitle" data-i18n="timelineHint">Event volume across the most recent ingestion windows.</p>
-                </div>
+                <p class="eyebrow" data-i18n="timeline">Timeline</p>
+                <h3 data-i18n="eventFlow">Event flow</h3>
               </div>
               <canvas id="chart-timeline"></canvas>
-            </div>
-            <div class="panel">
-              <div class="panel-head panel-head-space-between">
-                <div>
-                  <h3 data-i18n="sourceBreakdown">Source Breakdown</h3>
-                  <p class="panel-subtitle" data-i18n="grafanaHint">Inspect Grafana for richer operational dashboards.</p>
-                </div>
-                <a class="btn-secondary" href="http://localhost:3000" target="_blank" rel="noreferrer noopener">Open Grafana</a>
+            </article>
+
+            <article class="panel">
+              <div class="panel-head">
+                <p class="eyebrow" data-i18n="events">Events</p>
+                <h3 data-i18n="latestEvents">Latest ingested signals</h3>
               </div>
-              <canvas id="chart-source-breakdown"></canvas>
+              <div id="latest-events" class="stack"></div>
+            </article>
+          </div>
+
+          <div class="grid two-col">
+            <article class="panel">
+              <div class="panel-head">
+                <p class="eyebrow" data-i18n="latestAlerts">Latest Alerts</p>
+                <h3 data-i18n="priorityQueue">Priority queue</h3>
+              </div>
+              <div id="latest-alerts" class="stack"></div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-head">
+                <p class="eyebrow" data-i18n="status">Status</p>
+                <h3 data-i18n="statusSummary">System summary</h3>
+              </div>
+              <div id="status-summary" class="status-summary"></div>
+            </article>
+          </div>
+
+          <article class="panel">
+            <div class="panel-head panel-head-space-between">
+              <div>
+                <p class="eyebrow" data-i18n="sourceBreakdown">Source breakdown</p>
+                <h3 data-i18n="grafanaHint">Grafana operational view</h3>
+              </div>
+              <a class="btn-secondary" id="grafana-panel-launch" href="#" target="_blank" rel="noreferrer noopener" style="display:none;">Open Grafana</a>
+            </div>
+            <canvas id="chart-source-breakdown"></canvas>
+          </article>
+        </section>
+
+        <section class="view" id="view-alerts">
+          <div class="table-toolbar">
+            <select id="alert-status-filter">
+              <option value="" data-i18n="all">All</option>
+              <option value="active">Active</option>
+              <option value="acknowledged">Acknowledged</option>
+              <option value="resolved">Resolved</option>
+            </select>
+            <select id="alert-severity-filter">
+              <option value="" data-i18n="allSeverities">All severities</option>
+              <option value="critical">Critical</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+            <button class="primary-btn" id="reload-alerts" data-i18n="manualRefresh">Refresh now</button>
+          </div>
+          <div class="grid three-col section-summary" id="alerts-summary">
+            <div class="summary-card">
+              <div class="row">
+                <strong data-i18n="alerts">Alerts</strong>
+                <span id="alerts-summary-total">0</span>
+              </div>
+              <small data-i18n="alertsSummary">Matching alerts in the current filter view.</small>
+            </div>
+            <div class="summary-card">
+              <div class="row">
+                <strong id="alerts-summary-active">0</strong>
+                <span data-i18n="active">Active</span>
+              </div>
+              <small data-i18n="alertsActiveHint">Alerts requiring triage or response.</small>
+            </div>
+            <div class="summary-card">
+              <div class="row">
+                <strong id="alerts-summary-high">0</strong>
+                <span data-i18n="highCritical">High/Critical</span>
+              </div>
+              <small data-i18n="alertsHighHint">Higher-severity alerts in the current table.</small>
             </div>
           </div>
-        </section>
-        <section class="view" id="view-alerts">
-          <div class="content-panel">
-            <div id="alerts-table"></div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th data-i18n="severity">Severity</th>
+                  <th data-i18n="rule">Rule</th>
+                  <th data-i18n="message">Message</th>
+                  <th data-i18n="status">Status</th>
+                  <th data-i18n="time">Time</th>
+                  <th data-i18n="action">Action</th>
+                </tr>
+              </thead>
+              <tbody id="alerts-table"></tbody>
+            </table>
           </div>
         </section>
+
         <section class="view" id="view-events">
-          <div class="content-panel"></div>
+          <div class="table-toolbar">
+            <input id="event-search" type="search" data-i18n-placeholder="searchEvents" placeholder="Search events..." />
+            <select id="event-severity-filter">
+              <option value="" data-i18n="allSeverities">All severities</option>
+              <option value="critical">Critical</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+            <select id="event-source-filter">
+              <option value="" data-i18n="allSources">All sources</option>
+            </select>
+            <button class="primary-btn" id="reload-events" data-i18n="manualRefresh">Refresh now</button>
+          </div>
+          <div class="grid three-col section-summary" id="events-summary">
+            <div class="summary-card">
+              <div class="row">
+                <strong data-i18n="events">Events</strong>
+                <span id="events-summary-total">0</span>
+              </div>
+              <small data-i18n="eventsSummary">Events loaded for this filter view.</small>
+            </div>
+            <div class="summary-card">
+              <div class="row">
+                <strong id="events-summary-sources">0</strong>
+                <span data-i18n="sources">Sources</span>
+              </div>
+              <small data-i18n="eventsSourcesHint">Distinct ingestion sources in view.</small>
+            </div>
+            <div class="summary-card">
+              <div class="row">
+                <strong id="events-summary-severity">0</strong>
+                <span data-i18n="highCritical">High/Critical</span>
+              </div>
+              <small data-i18n="eventsSeverityHint">Higher-severity events in current results.</small>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th data-i18n="type">Type</th>
+                  <th data-i18n="source">Source</th>
+                  <th data-i18n="title">Title</th>
+                  <th data-i18n="severity">Severity</th>
+                  <th data-i18n="time">Time</th>
+                </tr>
+              </thead>
+              <tbody id="events-table"></tbody>
+            </table>
+          </div>
         </section>
+
         <section class="view" id="view-status">
-          <div class="content-panel"></div>
+          <div class="grid two-col">
+            <article class="panel">
+              <div class="panel-head">
+                <p class="eyebrow" data-i18n="engine">Engine</p>
+                <h3 data-i18n="systemSnapshot">System snapshot</h3>
+              </div>
+              <pre id="status-json" class="json-card"></pre>
+            </article>
+            <article class="panel">
+              <div class="panel-head">
+                <p class="eyebrow" data-i18n="liveIngest">Live ingest</p>
+                <h3 data-i18n="sendSampleEvent">Send a sample event</h3>
+              </div>
+              <div class="preset-row" id="ingest-presets"></div>
+              <form id="ingest-form" class="ingest-form">
+                <input name="source" value="auth-gateway" data-i18n-placeholder="source" placeholder="Source" />
+                <input name="event_type" value="failed_login" data-i18n-placeholder="eventType" placeholder="Event type" />
+                <input name="title" value="Repeated login failure" data-i18n-placeholder="title" placeholder="Title" />
+                <textarea name="message" data-i18n-placeholder="message" placeholder="Message">Multiple failed login attempts for admin user from external IP.</textarea>
+                <input name="ip_address" value="198.51.100.24" data-i18n-placeholder="ipAddress" placeholder="IP address" />
+                <input name="cve_id" value="" placeholder="CVE-YYYY-NNNN" />
+                <select name="severity">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                  <option value="critical">Critical</option>
+                </select>
+                <button class="primary-btn" type="submit" data-i18n="ingestTestEvent">Ingest test event</button>
+              </form>
+              <div id="ingest-result" class="inline-note"></div>
+            </article>
+          </div>
         </section>
       </main>
     </div>
